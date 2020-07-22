@@ -58,6 +58,8 @@ export default function App({ entries }: AppProps) {
 									<Redirect to={entry.to} />
 								</Route>
 							);
+
+						return <></>;
 					})
 					.flat()}
 			</Switch>

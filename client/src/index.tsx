@@ -5,11 +5,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import App, { AppEntry } from 'components/App';
 
+import ProjectPage from 'pages/Project';
+
 const entries: AppEntry[] = [
 	{
 		name: 'Projects',
 		url: '/projects',
-		component: () => <>AAA</>
+		component: ProjectPage
 	},
 	{
 		name: 'Games',
