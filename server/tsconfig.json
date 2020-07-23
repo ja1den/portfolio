@@ -11,10 +11,8 @@
 		"lib": ["esnext"],
 		"baseUrl": "src",
 		"paths": {
-			"@index": ["index"],
 			"@models/*": ["models/*"],
-			"@routes/*": ["routes/*"],
-			"@scripts/*": ["scripts/*"]
+			"@routes/*": ["routes/*"]
 		},
 		"strict": true
 	},

@@ -8,6 +8,7 @@ import { readFileSync } from 'fs';
 import winston from 'winston';
 
 import { Server, ServerOptions } from '@jadiewadie/simple-server';
+import mongoose from 'mongoose';
 
 // Logger
 const logger = winston.createLogger({
@@ -15,7 +16,21 @@ const logger = winston.createLogger({
 	transports: [new winston.transports.Console({ level: 'info' })]
 });
 
-(async function () {
+// Database
+const { DB_USER, DB_PASS, DB_HOST, DB_PORT } = process.env;
+const db = mongoose.connection;
+
+mongoose
+	.connect(`mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}`, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		dbName: 'roundsquare',
+		connectTimeoutMS: 0
+	})
+	.catch(err => logger.error(`mongoose connect failed - ${err.message}`));
+
+// Main
+db.once('open', async function () {
 	// HTTPS
 	let https: ServerOptions['https'];
 	try {
@@ -59,4 +74,4 @@ const logger = winston.createLogger({
 	server.start(port);
 
 	logger.info(`port ${port.toString().yellow}`);
-})();
+});
