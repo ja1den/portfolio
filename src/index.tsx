@@ -1,11 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 import App, { AppEntry } from 'components/App';
-
 import ProjectPage from 'pages/Project';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const entries: AppEntry[] = [
 	{
