@@ -1,45 +1,40 @@
 {
 	"name": "portfolio",
 	"version": "1.0.0",
-	"description": "My portfolio!",
-	"scripts": {
-		"client": "cd client && set PORT=3001 && react-scripts start",
-		"client:build": "node client/build.js",
-		"server": "rimraf build/server && cd server && nodemon",
-		"server:kill": "for /f \"tokens=5\" %a in ('netstat -aon ^| find \"0.0.0.0:3000\"') do (taskkill /f /pid %a)",
-		"start": "rimraf build && node client/build.js && cd server && tsc && node -r dotenv/config ."
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/Jadie-Wadie/portfolio.git"
-	},
 	"author": "Jadie Wadie",
 	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/Jadie-Wadie/portfolio/issues"
-	},
-	"homepage": "https://github.com/Jadie-Wadie/portfolio#readme",
 	"dependencies": {
-		"@jadiewadie/simple-server": "^2.3.1",
 		"@testing-library/react": "^9.5.0",
 		"@testing-library/user-event": "^7.2.1",
-		"@types/mongoose": "^5.7.32",
-		"@types/node": "^12.12.51",
 		"@types/react": "^16.9.43",
 		"@types/react-dom": "^16.9.8",
 		"@types/react-router-dom": "^5.1.5",
-		"axios": "^0.19.2",
 		"bootstrap": "^4.5.0",
-		"module-alias": "^2.2.2",
-		"mongoose": "^5.9.25",
-		"nodemon": "^2.0.4",
+		"firebase": "^7.17.1",
 		"react": "^16.13.1",
 		"react-bootstrap": "^1.2.2",
 		"react-dom": "^16.13.1",
 		"react-router-dom": "^5.2.0",
 		"react-scripts": "3.4.1",
-		"rimraf": "^3.0.2",
-		"typescript": "^3.7.5",
-		"winston": "^3.3.3"
+		"typescript": "^3.7.5"
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build"
+	},
+	"eslintConfig": {
+		"extends": "react-app"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
 	}
 }
