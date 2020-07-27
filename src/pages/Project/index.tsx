@@ -3,7 +3,7 @@ import { firestore } from 'firestore';
 
 import { projectConverter, Project } from 'models/Project';
 
-import { Container, CardDeck } from 'react-bootstrap';
+import { Container, CardColumns } from 'react-bootstrap';
 import ProjectCard from './components/ProjectCard';
 
 type ProjectPageState = {
@@ -20,23 +20,21 @@ export default class ProjectPage extends React.Component<{}, ProjectPageState> {
 		firestore
 			.collection('projects')
 			.withConverter(projectConverter)
-			.onSnapshot(snapshot => {
-				const projects = snapshot.docs.map(doc => doc.data());
-
+			.onSnapshot(snapshot =>
 				this.setState({
-					projects: [projects, projects, projects].flat()
-				});
-			});
+					projects: snapshot.docs.map(doc => doc.data())
+				})
+			);
 	}
 
 	render() {
 		return (
 			<Container className='pt-3'>
-				<CardDeck>
+				<CardColumns>
 					{this.state.projects.map((project, index) => (
 						<ProjectCard key={index} {...project} />
 					))}
-				</CardDeck>
+				</CardColumns>
 			</Container>
 		);
 	}

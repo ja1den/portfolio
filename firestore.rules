@@ -4,5 +4,5 @@ service cloud.firestore {
 		match /projects/{document=**} {
 			allow read;
 		}
-  	}
+  }
 }
