@@ -8,58 +8,76 @@ import {
 	RouteProps
 } from 'react-router-dom';
 
-import Header, { HeaderLink, HeaderGroup } from 'components/Header';
+import Header from 'components/Header';
 
-type AppLink = HeaderLink & { component: RouteProps['component'] };
-type AppGroup = Omit<HeaderGroup, 'links'> & { links: AppLink[] };
-type AppRedirect = { from: string; to: string };
+declare namespace App {
+	export type Link = {
+		type: 'link';
+		name: string;
+		url: string;
+		component: RouteProps['component'];
+	};
 
-export type AppEntry = AppLink | AppGroup | AppRedirect;
+	export type Group = {
+		type: 'group';
+		name: string;
+		url: string;
+		links: Link[];
+	};
 
-type AppProps = { entries: AppEntry[] };
+	export type Redirect = {
+		type: 'redirect';
+		from: string;
+		to: string;
+	};
 
-export default function App({ entries }: AppProps) {
+	export type Entry = Link | Group | Redirect;
+}
+
+type AppProps = { entries: App.Entry[] };
+
+function App({ entries }: AppProps) {
 	return (
 		<BrowserRouter>
 			<Header
 				title='Jadie Wadie'
 				entries={
 					entries.filter(
-						link => isAppLink(link) || isAppGroup(link)
-					) as (AppLink | AppGroup)[]
+						link => link.type === 'link' || link.type === 'group'
+					) as (App.Link | App.Group)[]
 				}
 			/>
 			<Switch>
 				{entries
 					.map(entry => {
-						if (isAppLink(entry))
-							return (
-								<Route
-									key={entry.name}
-									path={entry.url}
-									component={entry.component}
-								/>
-							);
-
-						if (isAppGroup(entry))
-							return entry.links.map(link => (
-								<Route
-									key={link.name}
-									path={entry.url + link.url}
-									component={link.component}
-								/>
-							));
-
-						if (isAppRedirect(entry))
-							return (
-								<Route
-									key={`${entry.from}-${entry.to}`}
-									path={entry.from}>
-									<Redirect to={entry.to} />
-								</Route>
-							);
-
-						return <></>;
+						switch (entry.type) {
+							case 'link':
+								return (
+									<Route
+										key={entry.name}
+										path={entry.url}
+										component={entry.component}
+									/>
+								);
+							case 'group':
+								return entry.links.map(link => (
+									<Route
+										key={link.name}
+										path={entry.url + link.url}
+										component={link.component}
+									/>
+								));
+							case 'redirect':
+								return (
+									<Route
+										key={`${entry.from}-${entry.to}`}
+										path={entry.from}>
+										<Redirect to={entry.to} />
+									</Route>
+								);
+							default:
+								return <></>;
+						}
 					})
 					.flat()}
 			</Switch>
@@ -67,14 +85,4 @@ export default function App({ entries }: AppProps) {
 	);
 }
 
-function isAppLink(entry: AppEntry): entry is AppLink {
-	return (entry as AppLink).component !== undefined;
-}
-
-function isAppGroup(entry: AppEntry): entry is AppGroup {
-	return (entry as AppGroup).links !== undefined;
-}
-
-function isAppRedirect(link: AppEntry): link is AppRedirect {
-	return (link as AppRedirect).from !== undefined;
-}
+export default App;

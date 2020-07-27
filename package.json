@@ -23,7 +23,10 @@
 		"build": "react-scripts build"
 	},
 	"eslintConfig": {
-		"extends": "react-app"
+		"extends": "react-app",
+		"rules": {
+			"no-redeclare": 0
+		}
 	},
 	"browserslist": {
 		"production": [

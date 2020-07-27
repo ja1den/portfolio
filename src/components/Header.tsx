@@ -3,10 +3,22 @@ import { NavLink } from 'react-router-dom';
 
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
-export type HeaderLink = { name: string; url: string };
-export type HeaderGroup = { name: string; url: string; links: HeaderLink[] };
+declare namespace Header {
+	export type Link = {
+		type: 'link';
+		name: string;
+		url: string;
+	};
 
-type HeaderProps = { title: string; entries: (HeaderLink | HeaderGroup)[] };
+	export type Group = {
+		type: 'group';
+		name: string;
+		url: string;
+		links: Link[];
+	};
+}
+
+type HeaderProps = { title: string; entries: (Header.Link | Header.Group)[] };
 type HeaderState = { active: boolean };
 
 export default class Header extends React.Component<HeaderProps, HeaderState> {
@@ -26,8 +38,8 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 				<Navbar.Collapse id='responsive-navbar-nav'>
 					<Nav className='mr-auto'>
 						{this.props.entries.map(
-							(entry: HeaderLink | HeaderGroup) =>
-								isHeaderGroup(entry) ? (
+							(entry: Header.Link | Header.Group) =>
+								entry.type === 'group' ? (
 									<NavDropdown
 										key={entry.name}
 										title={entry.name}
@@ -55,8 +67,4 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 			</Navbar>
 		);
 	}
-}
-
-function isHeaderGroup(link: HeaderLink | HeaderGroup): link is HeaderGroup {
-	return (link as HeaderGroup).links !== undefined;
 }
