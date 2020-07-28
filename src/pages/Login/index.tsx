@@ -69,11 +69,15 @@ export default class LoginPage extends React.Component<{}, LoginPageState> {
 	}
 
 	onChange(event: React.ChangeEvent<HTMLInputElement>) {
-		/*
-		const name = event.target.name as 'email' | 'password';
-		const value = event.target.value;
-		this.setState({ [name]: value });
-		*/
+		switch (event.target.name) {
+			case 'email':
+				this.setState({ email: event.target.value });
+				break;
+			case 'password':
+				this.setState({ password: event.target.value });
+				break;
+		}
+		setImmediate(() => console.log(this.state));
 	}
 
 	onSubmit(event: React.MouseEvent<HTMLElement, MouseEvent>) {}
