@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { NavLink } from 'react-router-dom';
 
 import { Navbar, Nav, NavDropdown, Form, Button } from 'react-bootstrap';
@@ -18,8 +19,12 @@ declare namespace Header {
 	};
 }
 
-type HeaderProps = { title: string; entries: (Header.Link | Header.Group)[] };
-type HeaderState = { active: boolean; login?: Function };
+type HeaderProps = {
+	title: string;
+	entries: (Header.Link | Header.Group)[];
+	login?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+};
+type HeaderState = { active: boolean };
 
 export default class Header extends React.Component<HeaderProps, HeaderState> {
 	constructor(props: HeaderProps) {
@@ -63,9 +68,15 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 								)
 						)}
 					</Nav>
-					<Form className='d-none d-lg-flex' inline>
-						<Button variant='outline-primary'>Log in</Button>
-					</Form>
+					{this.props.login && (
+						<Form className='d-none d-lg-flex' inline>
+							<Button
+								variant='outline-primary'
+								onClick={this.props.login}>
+								Login
+							</Button>
+						</Form>
+					)}
 				</Navbar.Collapse>
 			</Navbar>
 		);

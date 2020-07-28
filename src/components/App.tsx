@@ -1,12 +1,7 @@
 import React from 'react';
 
-import {
-	BrowserRouter,
-	Switch,
-	Route,
-	Redirect,
-	RouteProps
-} from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { Switch, Route, Redirect, RouteProps } from 'react-router-dom';
 
 import Header from 'components/Header';
 
@@ -34,18 +29,21 @@ declare namespace App {
 	export type Entry = Link | Group | Redirect;
 }
 
-type AppProps = { entries: App.Entry[] };
+type AppProps = RouteComponentProps & { entries: App.Entry[] };
 
-function App({ entries }: AppProps) {
+const App = withRouter(({ entries, history }: AppProps) => {
 	return (
-		<BrowserRouter>
+		<>
 			<Header
 				title='Jadie Wadie'
 				entries={
 					entries.filter(
-						link => link.type === 'link' || link.type === 'group'
+						link =>
+							(link.type === 'link' || link.type === 'group') &&
+							link.url !== '/login'
 					) as (App.Link | App.Group)[]
 				}
+				login={() => history.push('/login')}
 			/>
 			<Switch>
 				{entries
@@ -81,8 +79,8 @@ function App({ entries }: AppProps) {
 					})
 					.flat()}
 			</Switch>
-		</BrowserRouter>
+		</>
 	);
-}
+});
 
 export default App;
