@@ -1,15 +1,21 @@
 import React from 'react';
-import { Modal, Form, Button, Alert } from 'react-bootstrap';
+import { Modal, Form, Button, Alert, Spinner } from 'react-bootstrap';
 
 declare namespace LoginModal {
 	export type Props = {
 		show: boolean;
 		onHide?: Function;
 
-		onSubmit: (email: string, password: string) => void;
+		onSubmit: (email: string, password: string) => Promise<void>;
 		error?: string;
 	};
-	export type State = { email: string; password: string; error: boolean };
+	export type State = {
+		email: string;
+		password: string;
+
+		loading: boolean;
+		error: boolean;
+	};
 }
 
 class LoginModal extends React.Component<LoginModal.Props, LoginModal.State> {
@@ -19,7 +25,8 @@ class LoginModal extends React.Component<LoginModal.Props, LoginModal.State> {
 		this.state = {
 			email: '',
 			password: '',
-			error: false
+			loading: false,
+			error: true
 		};
 
 		this.onChange = this.onChange.bind(this);
@@ -64,12 +71,18 @@ class LoginModal extends React.Component<LoginModal.Props, LoginModal.State> {
 				<Modal.Footer>
 					<Button
 						type='submit'
-						onClick={() => {
-							this.setState({ error: true });
-							this.onSubmit();
-						}}
-						children='Login'
-					/>
+						onClick={this.onSubmit}
+						disabled={this.state.loading}>
+						{this.state.loading ? (
+							<Spinner
+								animation='border'
+								size='sm'
+								role='status'
+							/>
+						) : (
+							'Login'
+						)}
+					</Button>
 				</Modal.Footer>
 			</Modal>
 		);
@@ -86,8 +99,12 @@ class LoginModal extends React.Component<LoginModal.Props, LoginModal.State> {
 		}
 	}
 
-	onSubmit() {
-		this.props.onSubmit(this.state.email, this.state.password);
+	async onSubmit() {
+		this.setState({ loading: true });
+		await this.props
+			.onSubmit(this.state.email, this.state.password)
+			.catch(() => {});
+		this.setState({ email: '', password: '', loading: false, error: true });
 	}
 }
 

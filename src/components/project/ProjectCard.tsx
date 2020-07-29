@@ -23,7 +23,9 @@ class ProjectCard extends React.Component<
 							<Card.Title>{this.props.name}</Card.Title>
 							<Form.Group className='mb-0' controlId='desc'>
 								<Form.Control
-									value={this.props.desc}></Form.Control>
+									value={this.props.desc}
+									onChange={() => {}}
+								/>
 							</Form.Group>
 							{this.props.demo && (
 								<Card.Link

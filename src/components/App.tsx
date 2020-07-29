@@ -66,11 +66,6 @@ class App extends React.Component<App.Props, App.State> {
 	}
 
 	render() {
-		const buttons: Header.Button[] =
-			this.state.user === null
-				? [{ name: 'Login', call: () => this.setState({ show: true }) }]
-				: [{ name: 'Logout', call: () => auth().signOut() }];
-
 		return (
 			<BrowserRouter>
 				<Header
@@ -83,7 +78,15 @@ class App extends React.Component<App.Props, App.State> {
 								link.url !== '/login'
 						) as (App.Link | App.Group)[]
 					}
-					buttons={buttons}
+					buttons={[
+						{
+							name: this.state.user === null ? 'Login' : 'Logout',
+							call: () =>
+								this.state.user === null
+									? this.setState({ show: true })
+									: auth().signOut()
+						}
+					]}
 				/>
 				<Switch>
 					{this.props.entries
@@ -135,10 +138,15 @@ class App extends React.Component<App.Props, App.State> {
 	}
 
 	onSubmit(email: string, password: string) {
-		auth()
-			.signInWithEmailAndPassword(email, password)
-			.then(() => this.setState({ show: false, error: undefined }))
-			.catch(({ message }) => this.setState({ error: message }));
+		return new Promise<void>(async (resolve, reject) => {
+			this.setState({ error: undefined });
+			auth()
+				.signInWithEmailAndPassword(email, password)
+				.then(() => resolve(void this.setState({ show: false })))
+				.catch(({ message }) =>
+					reject(void this.setState({ error: message }))
+				);
+		});
 	}
 }
 
