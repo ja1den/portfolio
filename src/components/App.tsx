@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { auth } from 'firestore';
 
 import {
@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 
 import Header from 'components/Header';
-import LoginModal from 'components/LoginModal';
+import FormModal from 'components/FormModal';
 
 declare namespace App {
 	export type Link = {
@@ -37,65 +37,102 @@ declare namespace App {
 }
 
 type AppProps = { entries: App.Entry[] };
+type AppState = { show: boolean; user: firebase.User | null };
 
-const App = ({ entries }: AppProps) => {
-	const [show, setShow] = useState(false);
-	const [user, setUser] = useState<firebase.User | null>(null);
+class App extends React.Component<AppProps, AppState> {
+	unsubscribe?: Function;
 
-	return (
-		<BrowserRouter>
-			<Header
-				title='Jadie Wadie'
-				entries={
-					entries.filter(
-						link =>
-							(link.type === 'link' || link.type === 'group') &&
-							link.url !== '/login'
-					) as (App.Link | App.Group)[]
-				}
-				buttons={
-					user === null
-						? [{ name: 'Login', call: () => setShow(true) }]
-						: [{ name: 'Logout', call: () => auth().signOut() }]
-				}
-			/>
-			<Switch>
-				{entries
-					.map(entry => {
-						switch (entry.type) {
-							case 'link':
-								return (
-									<Route
-										key={entry.name}
-										path={entry.url}
-										component={entry.component}
-									/>
-								);
-							case 'group':
-								return entry.links.map(link => (
-									<Route
-										key={link.name}
-										path={entry.url + link.url}
-										component={link.component}
-									/>
-								));
-							case 'redirect':
-								return (
-									<Route
-										key={`${entry.from}-${entry.to}`}
-										path={entry.from}>
-										<Redirect to={entry.to} />
-									</Route>
-								);
-							default:
-								return null;
-						}
-					})
-					.flat()}
-			</Switch>
-			<LoginModal show={show} setShow={setShow} setUser={setUser} />
-		</BrowserRouter>
-	);
-};
+	constructor(props: AppProps) {
+		super(props);
+
+		this.state = {
+			show: false,
+			user: null
+		};
+
+		this.onSubmit = this.onSubmit.bind(this);
+	}
+
+	componentDidMount() {
+		this.unsubscribe = auth().onAuthStateChanged(user =>
+			this.setState({ user })
+		);
+	}
+
+	componentWillUnmount() {
+		this.unsubscribe?.();
+	}
+
+	render() {
+		return (
+			<BrowserRouter>
+				<Header
+					title='Jadie Wadie'
+					entries={
+						this.props.entries.filter(
+							link =>
+								(link.type === 'link' ||
+									link.type === 'group') &&
+								link.url !== '/login'
+						) as (App.Link | App.Group)[]
+					}
+					buttons={
+						this.state.user === null
+							? [
+									{
+										name: 'Login',
+										call: () =>
+											this.setState({ show: true })
+									}
+							  ]
+							: [{ name: 'Logout', call: () => auth().signOut() }]
+					}
+				/>
+				<Switch>
+					{this.props.entries
+						.map(entry => {
+							switch (entry.type) {
+								case 'link':
+									return (
+										<Route
+											key={entry.name}
+											path={entry.url}
+											component={entry.component}
+										/>
+									);
+								case 'group':
+									return entry.links.map(link => (
+										<Route
+											key={link.name}
+											path={entry.url + link.url}
+											component={link.component}
+										/>
+									));
+								case 'redirect':
+									return (
+										<Route
+											key={`${entry.from}-${entry.to}`}
+											path={entry.from}>
+											<Redirect to={entry.to} />
+										</Route>
+									);
+								default:
+									return null;
+							}
+						})
+						.flat()}
+				</Switch>
+				<FormModal<{ email: string; password: string }>
+					show={this.state.show}
+					onHide={() => this.setState({ show: false })}
+					fields={[]}
+					onSubmit={this.onSubmit}
+				/>
+			</BrowserRouter>
+		);
+	}
+
+	onSubmit() {}
+}
 
 export default App;

@@ -3,24 +3,27 @@ import { auth } from 'firestore';
 
 import { Modal, Form, Button, Alert } from 'react-bootstrap';
 
-type LoginModalProps = {
+export type FormModalField = { name: string; type: string };
+
+type FormModalProps<T> = {
 	show: boolean;
-	setShow: React.Dispatch<React.SetStateAction<boolean>>;
-	setUser: (user: firebase.User | null) => void;
+	onHide?: Function;
+
+	fields: FormModalField[];
+	onSubmit: (data: T) => void;
 };
-type LoginModalState = {
+
+type FormModalState = {
 	email: string;
 	password: string;
 	error?: firebase.FirebaseError;
 };
 
-export default class LoginModal extends React.Component<
-	LoginModalProps,
-	LoginModalState
+export default class FormModal<T> extends React.Component<
+	FormModalProps<T>,
+	FormModalState
 > {
-	unsubscribe?: Function;
-
-	constructor(props: LoginModalProps) {
+	constructor(props: FormModalProps<T>) {
 		super(props);
 
 		this.state = {
@@ -32,22 +35,9 @@ export default class LoginModal extends React.Component<
 		this.onSubmit = this.onSubmit.bind(this);
 	}
 
-	componentDidMount() {
-		this.unsubscribe = auth().onAuthStateChanged(user =>
-			this.props.setUser(user)
-		);
-	}
-
-	componentWillUnmount() {
-		this.unsubscribe?.();
-	}
-
 	render() {
 		return (
-			<Modal
-				size='lg'
-				show={this.props.show}
-				onHide={() => this.props.setShow(false)}>
+			<Modal size='lg' show={this.props.show} onHide={this.props.onHide}>
 				<Modal.Header closeButton>
 					<Modal.Title>Login</Modal.Title>
 				</Modal.Header>
