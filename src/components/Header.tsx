@@ -74,7 +74,7 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 						)}
 					</Nav>
 					{Array.isArray(this.props.buttons) && (
-						<Form className='d-none d-lg-flex' inline>
+						<Form className='my-2 my-lg-0' inline>
 							{this.props.buttons.map(button => (
 								<Button
 									key={button.name}
