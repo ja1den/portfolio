@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 
 import Header from 'components/general/Header';
-import FormModal from 'components/general/FormModal';
+import LoginModal from 'components/general/LoginModal';
 
 declare namespace App {
 	export type Link = {
@@ -34,7 +34,11 @@ declare namespace App {
 	export type Entry = Link | Group | Redirect;
 
 	export type Props = { entries: App.Entry[] };
-	export type State = { show: boolean; user: firebase.User | null };
+	export type State = {
+		show: boolean;
+		user: firebase.User | null;
+		error?: string;
+	};
 }
 
 class App extends React.Component<App.Props, App.State> {
@@ -47,6 +51,8 @@ class App extends React.Component<App.Props, App.State> {
 			show: false,
 			user: null
 		};
+
+		this.onSubmit = this.onSubmit.bind(this);
 	}
 
 	componentDidMount() {
@@ -113,22 +119,21 @@ class App extends React.Component<App.Props, App.State> {
 						})
 						.flat()}
 				</Switch>
-				<FormModal
-					title='Login'
+				<LoginModal
 					show={this.state.show}
 					onHide={() => this.setState({ show: false })}
-					fields={{
-						email: { name: 'Email', type: 'email ' },
-						password: { name: 'Password', type: 'password' }
-					}}
-					submit='Login'
-					onSubmit={({ email, password }) => {
-						auth().signInWithEmailAndPassword(email, password);
-						// .catch(({ message }) => this.setState({ error: message }));
-					}}
+					onSubmit={this.onSubmit}
+					error={this.state.error}
 				/>
 			</BrowserRouter>
 		);
+	}
+
+	onSubmit(email: string, password: string) {
+		auth()
+			.signInWithEmailAndPassword(email, password)
+			.then(() => this.setState({ error: undefined }))
+			.catch(({ message }) => this.setState({ error: message }));
 	}
 }
 
