@@ -4,13 +4,13 @@ import { firestore } from 'firestore';
 import { projectConverter, Project } from 'models/Project';
 
 import { Container, CardColumns } from 'react-bootstrap';
-import ProjectCard from './components/ProjectCard';
+import ProjectCard from 'components/project/ProjectCard';
 
-type ProjectPageState = {
-	projects: Project[];
-};
+declare namespace ProjectPage {
+	export type State = { projects: Project[] };
+}
 
-export default class ProjectPage extends React.Component<{}, ProjectPageState> {
+class ProjectPage extends React.Component<{}, ProjectPage.State> {
 	constructor(props: {}) {
 		super(props);
 		this.state = { projects: [] };
@@ -39,3 +39,5 @@ export default class ProjectPage extends React.Component<{}, ProjectPageState> {
 		);
 	}
 }
+
+export default ProjectPage;

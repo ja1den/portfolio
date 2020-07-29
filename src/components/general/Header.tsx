@@ -10,7 +10,6 @@ declare namespace Header {
 		name: string;
 		url: string;
 	};
-
 	export type Group = {
 		type: 'group';
 		name: string;
@@ -22,17 +21,17 @@ declare namespace Header {
 		name: string;
 		call: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 	};
+
+	export type Props = {
+		title: string;
+		entries: (Header.Link | Header.Group)[];
+		buttons?: Header.Button[];
+	};
+	export type State = { active: boolean };
 }
 
-type HeaderProps = {
-	title: string;
-	entries: (Header.Link | Header.Group)[];
-	buttons?: Header.Button[];
-};
-type HeaderState = { active: boolean };
-
-export default class Header extends React.Component<HeaderProps, HeaderState> {
-	constructor(props: HeaderProps) {
+class Header extends React.Component<Header.Props, Header.State> {
+	constructor(props: Header.Props) {
 		super(props);
 
 		this.state = {
@@ -90,3 +89,5 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 		);
 	}
 }
+
+export default Header;

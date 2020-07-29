@@ -9,8 +9,8 @@ import {
 	RouteProps
 } from 'react-router-dom';
 
-import Header from 'components/Header';
-import FormModal from 'components/FormModal';
+import Header from 'components/general/Header';
+import FormModal from 'components/general/FormModal';
 
 declare namespace App {
 	export type Link = {
@@ -19,14 +19,12 @@ declare namespace App {
 		url: string;
 		component: RouteProps['component'];
 	};
-
 	export type Group = {
 		type: 'group';
 		name: string;
 		url: string;
 		links: Link[];
 	};
-
 	export type Redirect = {
 		type: 'redirect';
 		from: string;
@@ -34,23 +32,21 @@ declare namespace App {
 	};
 
 	export type Entry = Link | Group | Redirect;
+
+	export type Props = { entries: App.Entry[] };
+	export type State = { show: boolean; user: firebase.User | null };
 }
 
-type AppProps = { entries: App.Entry[] };
-type AppState = { show: boolean; user: firebase.User | null };
-
-class App extends React.Component<AppProps, AppState> {
+class App extends React.Component<App.Props, App.State> {
 	unsubscribe?: Function;
 
-	constructor(props: AppProps) {
+	constructor(props: App.Props) {
 		super(props);
 
 		this.state = {
 			show: false,
 			user: null
 		};
-
-		this.onSubmit = this.onSubmit.bind(this);
 	}
 
 	componentDidMount() {
@@ -64,6 +60,11 @@ class App extends React.Component<AppProps, AppState> {
 	}
 
 	render() {
+		const buttons: Header.Button[] =
+			this.state.user === null
+				? [{ name: 'Login', call: () => this.setState({ show: true }) }]
+				: [{ name: 'Logout', call: () => auth().signOut() }];
+
 		return (
 			<BrowserRouter>
 				<Header
@@ -76,17 +77,7 @@ class App extends React.Component<AppProps, AppState> {
 								link.url !== '/login'
 						) as (App.Link | App.Group)[]
 					}
-					buttons={
-						this.state.user === null
-							? [
-									{
-										name: 'Login',
-										call: () =>
-											this.setState({ show: true })
-									}
-							  ]
-							: [{ name: 'Logout', call: () => auth().signOut() }]
-					}
+					buttons={buttons}
 				/>
 				<Switch>
 					{this.props.entries
@@ -122,17 +113,23 @@ class App extends React.Component<AppProps, AppState> {
 						})
 						.flat()}
 				</Switch>
-				<FormModal<{ email: string; password: string }>
+				<FormModal
+					title='Login'
 					show={this.state.show}
 					onHide={() => this.setState({ show: false })}
-					fields={[]}
-					onSubmit={this.onSubmit}
+					fields={{
+						email: { name: 'Email', type: 'email ' },
+						password: { name: 'Password', type: 'password' }
+					}}
+					submit='Login'
+					onSubmit={({ email, password }) => {
+						auth().signInWithEmailAndPassword(email, password);
+						// .catch(({ message }) => this.setState({ error: message }));
+					}}
 				/>
 			</BrowserRouter>
 		);
 	}
-
-	onSubmit() {}
 }
 
 export default App;
