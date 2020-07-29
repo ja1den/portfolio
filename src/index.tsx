@@ -1,14 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { BrowserRouter } from 'react-router-dom';
-
 import Container from 'react-bootstrap/Container';
 
 import App from 'components/App';
-
 import ProjectPage from 'pages/Project';
-import LoginPage from 'pages/Login';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -47,21 +43,10 @@ const entries: App.Entry[] = [
 		]
 	},
 	{
-		type: 'link',
-		name: 'Login',
-		url: '/login',
-		component: LoginPage
-	},
-	{
 		type: 'redirect',
 		from: '/',
 		to: '/projects'
 	}
 ];
 
-ReactDOM.render(
-	<BrowserRouter>
-		<App entries={entries} />
-	</BrowserRouter>,
-	document.getElementById('root')
-);
+ReactDOM.render(<App entries={entries} />, document.getElementById('root'));

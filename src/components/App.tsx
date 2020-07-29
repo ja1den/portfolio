@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { auth } from 'firestore';
 
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { Switch, Route, Redirect, RouteProps } from 'react-router-dom';
+import {
+	BrowserRouter,
+	Switch,
+	Route,
+	Redirect,
+	RouteProps
+} from 'react-router-dom';
 
 import Header from 'components/Header';
+import LoginModal from 'components/LoginModal';
 
 declare namespace App {
 	export type Link = {
@@ -29,11 +36,14 @@ declare namespace App {
 	export type Entry = Link | Group | Redirect;
 }
 
-type AppProps = RouteComponentProps & { entries: App.Entry[] };
+type AppProps = { entries: App.Entry[] };
 
-const App = withRouter(({ entries, history }: AppProps) => {
+const App = ({ entries }: AppProps) => {
+	const [show, setShow] = useState(false);
+	const [user, setUser] = useState<firebase.User | null>(null);
+
 	return (
-		<>
+		<BrowserRouter>
 			<Header
 				title='Jadie Wadie'
 				entries={
@@ -43,7 +53,11 @@ const App = withRouter(({ entries, history }: AppProps) => {
 							link.url !== '/login'
 					) as (App.Link | App.Group)[]
 				}
-				login={() => history.push('/login')}
+				buttons={
+					user === null
+						? [{ name: 'Login', call: () => setShow(true) }]
+						: [{ name: 'Logout', call: () => auth().signOut() }]
+				}
 			/>
 			<Switch>
 				{entries
@@ -74,13 +88,14 @@ const App = withRouter(({ entries, history }: AppProps) => {
 									</Route>
 								);
 							default:
-								return <></>;
+								return null;
 						}
 					})
 					.flat()}
 			</Switch>
-		</>
+			<LoginModal show={show} setShow={setShow} setUser={setUser} />
+		</BrowserRouter>
 	);
-});
+};
 
 export default App;

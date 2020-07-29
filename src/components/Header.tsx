@@ -17,12 +17,17 @@ declare namespace Header {
 		url: string;
 		links: Link[];
 	};
+
+	export type Button = {
+		name: string;
+		call: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+	};
 }
 
 type HeaderProps = {
 	title: string;
 	entries: (Header.Link | Header.Group)[];
-	login?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+	buttons?: Header.Button[];
 };
 type HeaderState = { active: boolean };
 
@@ -68,13 +73,16 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 								)
 						)}
 					</Nav>
-					{this.props.login && (
+					{Array.isArray(this.props.buttons) && (
 						<Form className='d-none d-lg-flex' inline>
-							<Button
-								variant='outline-primary'
-								onClick={this.props.login}>
-								Login
-							</Button>
+							{this.props.buttons.map(button => (
+								<Button
+									key={button.name}
+									variant='outline-primary'
+									onClick={button.call}
+									children={button.name}
+								/>
+							))}
 						</Form>
 					)}
 				</Navbar.Collapse>
