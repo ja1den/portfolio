@@ -6,14 +6,19 @@ import { projectConverter, Project } from 'models/Project';
 import { Container, CardColumns } from 'react-bootstrap';
 import ProjectCard from 'components/project/ProjectCard';
 
+import { PageProps } from 'components/App';
+
 declare namespace ProjectPage {
 	export type State = { projects: Project[] };
 }
 
-class ProjectPage extends React.Component<{}, ProjectPage.State> {
-	constructor(props: {}) {
+class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
+	constructor(props: PageProps) {
 		super(props);
-		this.state = { projects: [] };
+
+		this.state = {
+			projects: []
+		};
 	}
 
 	async componentDidMount() {
@@ -32,7 +37,11 @@ class ProjectPage extends React.Component<{}, ProjectPage.State> {
 			<Container className='pt-3'>
 				<CardColumns>
 					{this.state.projects.map((project, index) => (
-						<ProjectCard key={index} {...project} />
+						<ProjectCard
+							key={index}
+							{...project}
+							editable={!!this.props.user}
+						/>
 					))}
 				</CardColumns>
 			</Container>

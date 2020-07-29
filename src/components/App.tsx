@@ -1,23 +1,23 @@
 import React from 'react';
 import { auth } from 'firestore';
 
-import {
-	BrowserRouter,
-	Switch,
-	Route,
-	Redirect,
-	RouteProps
-} from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import Header from 'components/general/Header';
 import LoginModal from 'components/general/LoginModal';
+
+export type PageProps = {
+	user: firebase.User | null;
+};
 
 declare namespace App {
 	export type Link = {
 		type: 'link';
 		name: string;
 		url: string;
-		component: RouteProps['component'];
+		component:
+			| React.ComponentClass<PageProps>
+			| React.FunctionComponent<PageProps>;
 	};
 	export type Group = {
 		type: 'group';
@@ -88,23 +88,28 @@ class App extends React.Component<App.Props, App.State> {
 				<Switch>
 					{this.props.entries
 						.map(entry => {
+							let Page: App.Link['component'];
 							switch (entry.type) {
 								case 'link':
+									Page = entry.component;
 									return (
 										<Route
 											key={entry.name}
-											path={entry.url}
-											component={entry.component}
-										/>
+											path={entry.url}>
+											<Page user={this.state.user} />
+										</Route>
 									);
 								case 'group':
-									return entry.links.map(link => (
-										<Route
-											key={link.name}
-											path={entry.url + link.url}
-											component={link.component}
-										/>
-									));
+									return entry.links.map(link => {
+										Page = link.component;
+										return (
+											<Route
+												key={link.name}
+												path={entry.url + link.url}>
+												<Page user={this.state.user} />
+											</Route>
+										);
+									});
 								case 'redirect':
 									return (
 										<Route
@@ -132,7 +137,7 @@ class App extends React.Component<App.Props, App.State> {
 	onSubmit(email: string, password: string) {
 		auth()
 			.signInWithEmailAndPassword(email, password)
-			.then(() => this.setState({ error: undefined }))
+			.then(() => this.setState({ show: false, error: undefined }))
 			.catch(({ message }) => this.setState({ error: message }));
 	}
 }
