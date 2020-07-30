@@ -1,7 +1,7 @@
 import React from 'react';
 import { firestore } from 'firestore';
 
-import { projectConverter, Project } from 'models/Project';
+import { Project, projectConverter } from 'models/Project';
 
 import { Container, CardColumns } from 'react-bootstrap';
 import ProjectCard from 'components/project/ProjectCard';
@@ -9,7 +9,9 @@ import ProjectCard from 'components/project/ProjectCard';
 import { PageProps } from 'components/App';
 
 declare namespace ProjectPage {
-	export type State = { projects: Project[] };
+	export type State = {
+		projects: firebase.firestore.QueryDocumentSnapshot<Project>[];
+	};
 }
 
 class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
@@ -27,7 +29,7 @@ class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
 			.withConverter(projectConverter)
 			.onSnapshot(snapshot =>
 				this.setState({
-					projects: snapshot.docs.map(doc => doc.data())
+					projects: snapshot.docs
 				})
 			);
 	}
@@ -39,7 +41,8 @@ class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
 					{this.state.projects.map((project, index) => (
 						<ProjectCard
 							key={index}
-							{...project}
+							id={project.id}
+							project={project.data()}
 							editable={!!this.props.user}
 						/>
 					))}

@@ -35,7 +35,7 @@ class LoginModal extends React.Component<LoginModal.Props, LoginModal.State> {
 
 	render() {
 		return (
-			<Modal size='lg' show={this.props.show} onHide={this.props.onHide}>
+			<Modal show={this.props.show} onHide={this.props.onHide}>
 				<Modal.Header closeButton>
 					<Modal.Title>Login</Modal.Title>
 				</Modal.Header>
