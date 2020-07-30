@@ -1,5 +1,5 @@
 import React from 'react';
-import { firestore } from 'firestore';
+import { db } from 'database';
 
 import { Project, projectConverter } from 'models/Project';
 
@@ -24,8 +24,7 @@ class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
 	}
 
 	async componentDidMount() {
-		firestore
-			.collection('projects')
+		db.collection('projects')
 			.withConverter(projectConverter)
 			.onSnapshot(snapshot =>
 				this.setState({

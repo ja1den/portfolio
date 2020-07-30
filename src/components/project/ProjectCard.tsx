@@ -1,13 +1,13 @@
 import React from 'react';
-import { firestore } from 'firestore';
+import { db } from 'database';
 
-import { Project, projectConverter } from 'models/Project';
+import { Project } from 'models/Project';
 
 import { Card, Badge, Form } from 'react-bootstrap';
 
 declare namespace ProjectCard {
 	type Props = { id: string; project: Project; editable: boolean };
-	type State = { project: Project };
+	type State = Project;
 }
 
 class ProjectCard extends React.Component<
@@ -16,9 +16,7 @@ class ProjectCard extends React.Component<
 > {
 	constructor(props: ProjectCard.Props) {
 		super(props);
-		this.state = {
-			project: props.project
-		};
+		this.state = props.project;
 
 		this.onChange = this.onChange.bind(this);
 		this.debounce = this.debounce.bind(this);
@@ -33,8 +31,10 @@ class ProjectCard extends React.Component<
 							<Card.Title>{this.props.project.name}</Card.Title>
 							<Form.Group className='mb-0' controlId='desc'>
 								<Form.Control
-									value={this.state.project.desc}
+									type='textarea'
+									value={this.state.desc}
 									onChange={this.onChange}
+									autoComplete='off'
 								/>
 							</Form.Group>
 							{this.props.project.demo && (
@@ -99,40 +99,15 @@ class ProjectCard extends React.Component<
 		}
 	}
 
-	async onChange(event: React.ChangeEvent<HTMLInputElement>) {
-		const { id, value } = event.target;
+	updateProject = this.debounce((data: Partial<Project>) => {
+		db.collection('projects').doc(this.props.id).set(data, { merge: true });
+	}, 1000);
 
-		switch (id) {
+	async onChange({ target }: React.ChangeEvent<HTMLInputElement>) {
+		switch (target.id) {
 			case 'desc':
-				this.setState(state => ({
-					project: {
-						...state.project,
-						desc: value
-					}
-				}));
-
-				this.debounce((value: string) => {
-					console.log(`Debounce: ${value}`);
-				}, 1000)(value);
-
-				console.log(this.props.id);
-				console.log(
-					(
-						await firestore
-							.collection('projects')
-							.withConverter(projectConverter)
-							.doc(this.props.id)
-							.get()
-					).data()
-				);
-
-				/*
-				let timer: number;
-				this.onDebouncedChange = event => {
-					clearTimeout(timer);
-					timer = window.setTimeout(() => this.onChange(event), 1000);
-				};
-				*/
+				this.setState({ desc: target.value });
+				this.updateProject({ desc: target.value });
 				break;
 		}
 	}
@@ -141,7 +116,7 @@ class ProjectCard extends React.Component<
 		let timer: number;
 		return (...args: any[]) => {
 			clearTimeout(timer);
-			timer = window.setTimeout(func.apply(this, ...args), delay);
+			timer = window.setTimeout(() => func.bind(this)(...args), delay);
 		};
 	}
 }

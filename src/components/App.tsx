@@ -1,10 +1,10 @@
 import React from 'react';
-import { auth } from 'firestore';
+import { auth } from 'database';
 
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 import Header from 'components/general/Header';
-import LoginModal from 'components/general/LoginModal';
+import Login from 'components/general/Login';
 
 export type PageProps = {
 	user: firebase.User | null;
@@ -51,8 +51,6 @@ class App extends React.Component<App.Props, App.State> {
 			show: false,
 			user: null
 		};
-
-		this.onSubmit = this.onSubmit.bind(this);
 	}
 
 	componentDidMount() {
@@ -66,27 +64,28 @@ class App extends React.Component<App.Props, App.State> {
 	}
 
 	render() {
+		const entries: Header.Props['entries'] = this.props.entries.filter(
+			link =>
+				(link.type === 'link' || link.type === 'group') &&
+				link.url !== '/login'
+		) as (App.Link | App.Group)[];
+
+		const buttons: Header.Props['buttons'] = [
+			{
+				name: this.state.user === null ? 'Login' : 'Logout',
+				call: () =>
+					this.state.user === null
+						? this.showLogin()
+						: auth().signOut()
+			}
+		];
+
 		return (
 			<BrowserRouter>
 				<Header
 					title='Jadie Wadie'
-					entries={
-						this.props.entries.filter(
-							link =>
-								(link.type === 'link' ||
-									link.type === 'group') &&
-								link.url !== '/login'
-						) as (App.Link | App.Group)[]
-					}
-					buttons={[
-						{
-							name: this.state.user === null ? 'Login' : 'Logout',
-							call: () =>
-								this.state.user === null
-									? this.setState({ show: true })
-									: auth().signOut()
-						}
-					]}
+					entries={entries}
+					buttons={buttons}
 				/>
 				<Switch>
 					{this.props.entries
@@ -127,27 +126,17 @@ class App extends React.Component<App.Props, App.State> {
 						})
 						.flat()}
 				</Switch>
-				<LoginModal
+				<Login
 					show={this.state.show}
-					onHide={() => this.setState({ show: false })}
-					onSubmit={this.onSubmit}
-					error={this.state.error}
+					onClose={this.hideLogin}
+					onLogin={this.hideLogin}
 				/>
 			</BrowserRouter>
 		);
 	}
 
-	onSubmit(email: string, password: string) {
-		return new Promise<void>(async (resolve, reject) => {
-			this.setState({ error: undefined });
-			auth()
-				.signInWithEmailAndPassword(email, password)
-				.then(() => resolve(void this.setState({ show: false })))
-				.catch(({ message }) =>
-					reject(void this.setState({ error: message }))
-				);
-		});
-	}
+	showLogin = () => this.setState({ show: true });
+	hideLogin = () => this.setState({ show: false });
 }
 
 export default App;
