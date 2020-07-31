@@ -130,7 +130,7 @@ export default class FormProject extends React.Component<
 			case 'delete':
 				if (index !== undefined)
 					this.setState(state => {
-						state.project.tags.splice(index, 1);
+						state.project.tags!.splice(index, 1);
 						return state;
 					}, this.updateProject);
 				this.edits++;
@@ -151,7 +151,7 @@ export default class FormProject extends React.Component<
 
 		if (id === 'tag')
 			this.setState(state => {
-				state.project.tags[parseInt(name)] = value;
+				state.project.tags![parseInt(name)] = value;
 				return state;
 			}, this.updateProject);
 	};

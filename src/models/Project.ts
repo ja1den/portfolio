@@ -3,11 +3,12 @@ type SnapshotOptions = firebase.firestore.SnapshotOptions;
 
 export class Project {
 	constructor(
-		readonly name: string,
-		readonly desc: string,
-		readonly tags: string[],
+		readonly name?: string,
+		readonly desc?: string,
+		readonly tags?: string[],
 		readonly demo?: string,
-		readonly code?: string
+		readonly code?: string,
+		readonly image?: string
 	) {}
 }
 
@@ -16,7 +17,7 @@ export const projectConverter = {
 		...project
 	}),
 	fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions) {
-		const { name, desc, tags, demo, code } = snapshot.data(options)!;
-		return new Project(name, desc, tags, demo, code);
+		const { name, desc, tags, demo, code, image } = snapshot.data(options)!;
+		return new Project(name, desc, tags, demo, code, image);
 	}
 };
