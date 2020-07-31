@@ -1,5 +1,5 @@
-import React from 'react';
-import { db } from 'database';
+import React, { Fragment } from 'react';
+import { firebase, db } from 'database';
 
 import { Project } from 'models/Project';
 
@@ -8,6 +8,10 @@ import { Card, Badge, Form } from 'react-bootstrap';
 declare namespace ProjectCard {
 	type Props = { id: string; project: Project; editable: boolean };
 	type State = Project;
+
+	type Update = Partial<
+		Record<keyof Project, string | firebase.firestore.FieldValue>
+	>;
 }
 
 class ProjectCard extends React.Component<
@@ -23,32 +27,59 @@ class ProjectCard extends React.Component<
 	}
 
 	render() {
+		const insertNewlines = (str: string) => {
+			const split = str.split('\n');
+			return split.map((line, i) => (
+				<Fragment key={i}>
+					{line}
+					{i < split.length - 1 && <br />}
+				</Fragment>
+			));
+		};
+
 		if (this.props.editable) {
 			return (
-				<Card border='secondary'>
-					<Form>
+				<Card>
+					<Form onSubmit={e => e.preventDefault()}>
 						<Card.Body>
-							<Card.Title>{this.props.project.name}</Card.Title>
-							<Form.Group className='mb-0' controlId='desc'>
+							<Form.Group controlId='name'>
+								<Form.Label>Title</Form.Label>
 								<Form.Control
-									type='textarea'
-									value={this.state.desc}
+									value={this.state.name ?? ''}
 									onChange={this.onChange}
 									autoComplete='off'
 								/>
 							</Form.Group>
-							{this.props.project.demo && (
-								<Card.Link
-									className='d-inline-block pt-3'
-									href={this.props.project.demo}>
-									Live demo
-								</Card.Link>
-							)}
-							{this.props.project.code && (
-								<Card.Link href={this.props.project.code}>
-									Source code
-								</Card.Link>
-							)}
+
+							<Form.Group controlId='desc'>
+								<Form.Label>Description</Form.Label>
+								<Form.Control
+									as='textarea'
+									value={this.state.desc ?? ''}
+									onChange={this.onChange}
+									autoComplete='off'
+								/>
+							</Form.Group>
+
+							<Form.Group controlId='demo'>
+								<Form.Label>Live demo</Form.Label>
+								<Form.Control
+									type='url'
+									value={this.state.demo ?? ''}
+									onChange={this.onChange}
+									autoComplete='off'
+								/>
+							</Form.Group>
+
+							<Form.Group controlId='code'>
+								<Form.Label>Source code</Form.Label>
+								<Form.Control
+									type='url'
+									value={this.state.code ?? ''}
+									onChange={this.onChange}
+									autoComplete='off'
+								/>
+							</Form.Group>
 						</Card.Body>
 						{this.props.project.tags && (
 							<Card.Footer>
@@ -69,13 +100,22 @@ class ProjectCard extends React.Component<
 			return (
 				<Card>
 					<Card.Body>
-						<Card.Title>{this.props.project.name}</Card.Title>
-						<Card.Text>{this.props.project.desc}</Card.Text>
+						{this.props.project.name && (
+							<Card.Title>{this.props.project.name}</Card.Title>
+						)}
+
+						{this.props.project.desc && (
+							<Card.Text>
+								{insertNewlines(this.props.project.desc)}
+							</Card.Text>
+						)}
+
 						{this.props.project.demo && (
 							<Card.Link href={this.props.project.demo}>
 								Live demo
 							</Card.Link>
 						)}
+
 						{this.props.project.code && (
 							<Card.Link href={this.props.project.code}>
 								Source code
@@ -99,25 +139,31 @@ class ProjectCard extends React.Component<
 		}
 	}
 
-	updateProject = this.debounce((data: Partial<Project>) => {
+	updateProject = this.debounce((data: ProjectCard.Update) => {
 		db.collection('projects').doc(this.props.id).set(data, { merge: true });
 	}, 1000);
 
-	async onChange({ target }: React.ChangeEvent<HTMLInputElement>) {
-		switch (target.id) {
-			case 'desc':
-				this.setState({ desc: target.value });
-				this.updateProject({ desc: target.value });
-				break;
-		}
+	async onChange({
+		target: { id, value }
+	}: React.ChangeEvent<HTMLInputElement>) {
+		const updateField = (field: keyof Project, value: string) => {
+			this.setState({ ...this.state, [field]: value });
+			this.updateProject({
+				[field]: value ? value : firebase.firestore.FieldValue.delete()
+			});
+		};
+
+		if (['name', 'desc', 'demo', 'code'].includes(id))
+			updateField(id as keyof Project, value);
 	}
 
-	debounce(func: Function, delay: number) {
+	debounce<T extends Function>(func: T, delay: number) {
 		let timer: number;
-		return (...args: any[]) => {
+		let call = (...args: any) => {
 			clearTimeout(timer);
-			timer = window.setTimeout(() => func.bind(this)(...args), delay);
+			timer = window.setTimeout(() => func(...args), delay);
 		};
+		return (call as unknown) as T;
 	}
 }
 
