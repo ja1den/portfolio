@@ -2,11 +2,12 @@ import React from 'react';
 import { db } from 'database';
 
 import { Project, projectConverter } from 'models/Project';
+import { PageProps } from 'components/App';
 
 import { Container, CardColumns } from 'react-bootstrap';
-import ProjectCard from 'components/project/ProjectCard';
 
-import { PageProps } from 'components/App';
+import ViewProject from 'components/project/ViewProject';
+import FormProject from 'components/project/FormProject';
 
 declare namespace ProjectPage {
 	export type State = {
@@ -37,14 +38,20 @@ class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
 		return (
 			<Container className='pt-3'>
 				<CardColumns>
-					{this.state.projects.map((project, index) => (
-						<ProjectCard
-							key={index}
-							id={project.id}
-							project={project.data()}
-							editable={!!this.props.user}
-						/>
-					))}
+					{this.state.projects.map((project, index) =>
+						!!this.props.user ? (
+							<FormProject
+								key={project.id}
+								project={project.data()}
+								id={project.id}
+							/>
+						) : (
+							<ViewProject
+								key={project.id}
+								project={project.data()}
+							/>
+						)
+					)}
 				</CardColumns>
 			</Container>
 		);
