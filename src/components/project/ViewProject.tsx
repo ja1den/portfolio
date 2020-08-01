@@ -28,7 +28,7 @@ export default function ViewProject({
 
 	return (
 		<Card>
-			{url && <Card.Img variant='top' src={url}></Card.Img>}
+			{url && <Card.Img variant='top' src={url} />}
 
 			<Card.Body>
 				{name && <Card.Title>{name}</Card.Title>}
