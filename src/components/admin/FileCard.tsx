@@ -49,19 +49,25 @@ export default class FileCard extends React.Component<
 									</td>
 								</tr>
 								<tr>
-									<td>Type</td>
+									<td>Path</td>
 									<td>
-										{meta ? meta.contentType : 'Loading...'}
+										{meta ? meta.fullPath : 'Loading...'}
 									</td>
 								</tr>
 								<tr>
-									<td>Created</td>
+									<td>Time</td>
 									<td>
 										{meta
 											? moment(meta.timeCreated).format(
 													'M MMM YYYY HH:mm:ss'
 											  )
 											: 'Loading...'}
+									</td>
+								</tr>
+								<tr>
+									<td>Type</td>
+									<td>
+										{meta ? meta.contentType : 'Loading...'}
 									</td>
 								</tr>
 							</tbody>

@@ -127,7 +127,7 @@ class App extends React.Component<AppProps, AppState> {
 
 	renderPage(link: App.Link, url: string) {
 		if (process.env.NODE_ENV !== 'development')
-			if (!(link?.auth === true && !!this.state.user === false)) return;
+			if (link?.auth === true && !!this.state.user === false) return;
 
 		const Page = link.component;
 		return (
