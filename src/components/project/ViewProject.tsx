@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-import { storage } from 'database';
 import { Project } from 'models/Project';
 
 import { Card, Badge } from 'react-bootstrap';
+
+import FirebaseImage from 'components/general/FirebaseImage';
 import Newline from 'components/general/Newline';
 
 export default function ViewProject({
@@ -11,24 +12,13 @@ export default function ViewProject({
 }: {
 	project: Project;
 }) {
-	const [url, setURL] = useState<string | null>(null);
-
-	useEffect(() => {
-		if (image)
-			(async () => {
-				setURL(
-					await storage
-						.ref(image)
-						.getDownloadURL()
-						.catch(({ message }) => console.error(message))
-				);
-			})();
-		else setURL(null);
-	}, [image]);
-
 	return (
 		<Card>
-			{url && <Card.Img variant='top' src={url} />}
+			{image && (
+				<FirebaseImage image={image} prop='src'>
+					<Card.Img variant='top' />
+				</FirebaseImage>
+			)}
 
 			<Card.Body>
 				{name && <Card.Title>{name}</Card.Title>}

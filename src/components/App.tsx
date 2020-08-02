@@ -92,7 +92,6 @@ class App extends React.Component<AppProps, AppState> {
 				<Switch>
 					{this.props.entries
 						.map(entry => {
-							let Page: App.Link['component'];
 							switch (entry.type) {
 								case 'link':
 									return this.renderPage(entry, entry.url);
@@ -127,14 +126,15 @@ class App extends React.Component<AppProps, AppState> {
 	}
 
 	renderPage(link: App.Link, url: string) {
-		if (!(link?.auth === true && !!this.state.user === false)) {
-			const Page = link.component;
-			return (
-				<Route key={Page.name} path={url}>
-					<Page user={this.state.user} />
-				</Route>
-			);
-		}
+		if (process.env.NODE_ENV !== 'development')
+			if (!(link?.auth === true && !!this.state.user === false)) return;
+
+		const Page = link.component;
+		return (
+			<Route key={Page.name} path={url}>
+				<Page user={this.state.user} />
+			</Route>
+		);
 	}
 
 	showLogin = () => this.setState({ show: true });

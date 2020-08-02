@@ -83,22 +83,24 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 	}
 
 	renderLink(link: Header.Link, group?: Header.Group) {
-		if (!(link?.auth === true && this.props.auth === false))
-			return group ? (
-				<NavDropdown.Item
-					key={link.name}
-					to={group.url + link.url}
-					as={NavLink}
-					children={link.name}
-				/>
-			) : (
-				<Nav.Link
-					key={link.name}
-					to={link.url}
-					as={NavLink}
-					children={link.name}
-				/>
-			);
+		if (process.env.NODE_ENV !== 'development')
+			if (!(link?.auth === true && this.props.auth === false)) return;
+
+		return group ? (
+			<NavDropdown.Item
+				key={link.name}
+				to={group.url + link.url}
+				as={NavLink}
+				children={link.name}
+			/>
+		) : (
+			<Nav.Link
+				key={link.name}
+				to={link.url}
+				as={NavLink}
+				children={link.name}
+			/>
+		);
 	}
 }
 

@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Container from 'react-bootstrap/Container';
-
 import App from 'components/App';
 
 import ProjectPage from 'pages/Project';
