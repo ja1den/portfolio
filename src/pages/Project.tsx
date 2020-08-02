@@ -6,7 +6,7 @@ import { PageProps } from 'components/App';
 
 import { Container, CardColumns } from 'react-bootstrap';
 
-import ViewProject from 'components/project/ViewProject';
+import ViewCard from 'components/cards/ViewCard';
 
 type ProjectPageState = {
 	projects: firebase.firestore.QueryDocumentSnapshot<Project>[];
@@ -39,10 +39,7 @@ export default class ProjectPage extends React.Component<
 			<Container className='pt-3'>
 				<CardColumns>
 					{this.state.projects.map(project => (
-						<ViewProject
-							key={project.id}
-							project={project.data()}
-						/>
+						<ViewCard key={project.id} project={project.data()} />
 					))}
 				</CardColumns>
 			</Container>

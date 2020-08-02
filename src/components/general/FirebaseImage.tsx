@@ -26,15 +26,19 @@ const FirebaseImage: React.FunctionComponent<FirebaseImageProps> = ({
 		);
 	}
 
-	useEffect(
-		() =>
-			void (image
-				? getURL(image)
-						.then(setURL)
-						.catch(({ message }) => console.error(message))
-				: setURL(null)),
-		[image]
-	);
+	useEffect(() => {
+		let mounted = true;
+
+		if (image)
+			getURL(image)
+				.then(url => mounted && setURL(url))
+				.catch(({ message }) => console.error(message));
+		else setURL(null);
+
+		return () => {
+			mounted = false;
+		};
+	}, [image]);
 
 	return (
 		<>

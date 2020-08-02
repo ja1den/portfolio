@@ -7,7 +7,7 @@ import { Card, Badge } from 'react-bootstrap';
 import FirebaseImage from 'components/general/FirebaseImage';
 import Newline from 'components/general/Newline';
 
-export default function ViewProject({
+export default function ViewCard({
 	project: { name, desc, tags, demo, code, image }
 }: {
 	project: Project;
