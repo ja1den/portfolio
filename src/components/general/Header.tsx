@@ -9,7 +9,9 @@ declare namespace Header {
 		type: 'link';
 		name: string;
 		url: string;
+		auth?: boolean;
 	};
+
 	export type Group = {
 		type: 'group';
 		name: string;
@@ -21,17 +23,18 @@ declare namespace Header {
 		name: string;
 		call: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 	};
-
-	export type Props = {
-		title: string;
-		entries: (Header.Link | Header.Group)[];
-		buttons?: Header.Button[];
-	};
-	export type State = { active: boolean };
 }
 
-class Header extends React.Component<Header.Props, Header.State> {
-	constructor(props: Header.Props) {
+export type HeaderProps = {
+	title: string;
+	entries: (Header.Link | Header.Group)[];
+	buttons?: Header.Button[];
+	auth?: boolean;
+};
+export type HeaderState = { active: boolean };
+
+class Header extends React.Component<HeaderProps, HeaderState> {
+	constructor(props: HeaderProps) {
 		super(props);
 
 		this.state = {
@@ -53,22 +56,12 @@ class Header extends React.Component<Header.Props, Header.State> {
 										key={entry.name}
 										title={entry.name}
 										id={entry.name}>
-										{entry.links.map(link => (
-											<NavDropdown.Item
-												key={link.name}
-												to={entry.url + link.url}
-												as={NavLink}
-												children={link.name}
-											/>
-										))}
+										{entry.links.map(link =>
+											this.renderLink(link, entry)
+										)}
 									</NavDropdown>
 								) : (
-									<Nav.Link
-										key={entry.name}
-										to={entry.url}
-										as={NavLink}
-										children={entry.name}
-									/>
+									this.renderLink(entry)
 								)
 						)}
 					</Nav>
@@ -87,6 +80,25 @@ class Header extends React.Component<Header.Props, Header.State> {
 				</Navbar.Collapse>
 			</Navbar>
 		);
+	}
+
+	renderLink(link: Header.Link, group?: Header.Group) {
+		if (!(link?.auth === true && this.props.auth === false))
+			return group ? (
+				<NavDropdown.Item
+					key={link.name}
+					to={group.url + link.url}
+					as={NavLink}
+					children={link.name}
+				/>
+			) : (
+				<Nav.Link
+					key={link.name}
+					to={link.url}
+					as={NavLink}
+					children={link.name}
+				/>
+			);
 	}
 }
 

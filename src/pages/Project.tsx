@@ -4,18 +4,20 @@ import { db } from 'database';
 import { Project, projectConverter } from 'models/Project';
 import { PageProps } from 'components/App';
 
-import { Container, CardColumns } from 'react-bootstrap';
+import { Container, Nav, CardColumns } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
 
 import ViewProject from 'components/project/ViewProject';
 import FormProject from 'components/project/FormProject';
 
-declare namespace ProjectPage {
-	export type State = {
-		projects: firebase.firestore.QueryDocumentSnapshot<Project>[];
-	};
-}
+type ProjectPageState = {
+	projects: firebase.firestore.QueryDocumentSnapshot<Project>[];
+};
 
-class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
+export default class ProjectPage extends React.Component<
+	PageProps,
+	ProjectPageState
+> {
 	constructor(props: PageProps) {
 		super(props);
 
@@ -25,6 +27,7 @@ class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
 	}
 
 	async componentDidMount() {
+		/*
 		db.collection('projects')
 			.withConverter(projectConverter)
 			.onSnapshot(snapshot =>
@@ -32,30 +35,47 @@ class ProjectPage extends React.Component<PageProps, ProjectPage.State> {
 					projects: snapshot.docs
 				})
 			);
+		*/
 	}
 
 	render() {
-		return (
-			<Container className='pt-3'>
-				<CardColumns>
-					{this.state.projects.map((project, index) =>
-						!!this.props.user ? (
-							<FormProject
-								key={project.id}
-								project={project.data()}
-								id={project.id}
-							/>
-						) : (
-							<ViewProject
-								key={project.id}
-								project={project.data()}
-							/>
-						)
-					)}
-				</CardColumns>
-			</Container>
-		);
+		return <></>;
 	}
 }
 
-export default ProjectPage;
+/*
+
+return (
+	<Container className='pt-3'>
+		<Nav variant='tabs' defaultActiveKey='/projects/cards'>
+			<Nav.Item>
+				<Nav.Link to='/projects/cards' as={NavLink}>
+					Cards
+				</Nav.Link>
+			</Nav.Item>
+			<Nav.Item>
+				<Nav.Link to='/projects/files' as={NavLink}>
+					Files
+				</Nav.Link>
+			</Nav.Item>
+		</Nav>
+		<CardColumns>
+			{this.state.projects.map((project, index) =>
+				!!this.props.user ? (
+					<FormProject
+						key={project.id}
+						project={project.data()}
+						id={project.id}
+					/>
+				) : (
+					<ViewProject
+						key={project.id}
+						project={project.data()}
+					/>
+				)
+			)}
+		</CardColumns>
+	</Container>
+);
+
+*/

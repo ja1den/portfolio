@@ -3,7 +3,7 @@ import { auth } from 'database';
 
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
-import Header from 'components/general/Header';
+import Header, { HeaderProps } from 'components/general/Header';
 import Login from 'components/general/Login';
 
 export type PageProps = {
@@ -18,13 +18,16 @@ declare namespace App {
 		component:
 			| React.ComponentClass<PageProps>
 			| React.FunctionComponent<PageProps>;
+		auth?: boolean;
 	};
+
 	export type Group = {
 		type: 'group';
 		name: string;
 		url: string;
 		links: Link[];
 	};
+
 	export type Redirect = {
 		type: 'redirect';
 		from: string;
@@ -32,19 +35,19 @@ declare namespace App {
 	};
 
 	export type Entry = Link | Group | Redirect;
-
-	export type Props = { entries: App.Entry[] };
-	export type State = {
-		show: boolean;
-		user: firebase.User | null;
-		error?: string;
-	};
 }
 
-class App extends React.Component<App.Props, App.State> {
+type AppProps = { entries: App.Entry[] };
+type AppState = {
+	show: boolean;
+	user: firebase.User | null;
+	error?: string;
+};
+
+class App extends React.Component<AppProps, AppState> {
 	unsubscribe?: Function;
 
-	constructor(props: App.Props) {
+	constructor(props: AppProps) {
 		super(props);
 
 		this.state = {
@@ -64,13 +67,11 @@ class App extends React.Component<App.Props, App.State> {
 	}
 
 	render() {
-		const entries: Header.Props['entries'] = this.props.entries.filter(
-			link =>
-				(link.type === 'link' || link.type === 'group') &&
-				link.url !== '/login'
+		const entries: HeaderProps['entries'] = this.props.entries.filter(
+			link => link.type === 'link' || link.type === 'group'
 		) as (App.Link | App.Group)[];
 
-		const buttons: Header.Props['buttons'] = [
+		const buttons: HeaderProps['buttons'] = [
 			{
 				name: this.state.user === null ? 'Login' : 'Logout',
 				call: () =>
@@ -86,6 +87,7 @@ class App extends React.Component<App.Props, App.State> {
 					title='Jadie Wadie'
 					entries={entries}
 					buttons={buttons}
+					auth={!!this.state.user}
 				/>
 				<Switch>
 					{this.props.entries
@@ -93,25 +95,14 @@ class App extends React.Component<App.Props, App.State> {
 							let Page: App.Link['component'];
 							switch (entry.type) {
 								case 'link':
-									Page = entry.component;
-									return (
-										<Route
-											key={entry.name}
-											path={entry.url}>
-											<Page user={this.state.user} />
-										</Route>
-									);
+									return this.renderPage(entry, entry.url);
 								case 'group':
-									return entry.links.map(link => {
-										Page = link.component;
-										return (
-											<Route
-												key={link.name}
-												path={entry.url + link.url}>
-												<Page user={this.state.user} />
-											</Route>
-										);
-									});
+									return entry.links.map(link =>
+										this.renderPage(
+											link,
+											entry.url + link.url
+										)
+									);
 								case 'redirect':
 									return (
 										<Route
@@ -133,6 +124,17 @@ class App extends React.Component<App.Props, App.State> {
 				/>
 			</BrowserRouter>
 		);
+	}
+
+	renderPage(link: App.Link, url: string) {
+		if (!(link?.auth === true && !!this.state.user === false)) {
+			const Page = link.component;
+			return (
+				<Route key={Page.name} path={url}>
+					<Page user={this.state.user} />
+				</Route>
+			);
+		}
 	}
 
 	showLogin = () => this.setState({ show: true });
