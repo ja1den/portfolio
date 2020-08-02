@@ -1,47 +1,159 @@
 import React from 'react';
+import debounce from 'debounce';
 
 import { Project } from 'models/Project';
 
-import { Card, Badge } from 'react-bootstrap';
-
+import { Card, Form, Badge } from 'react-bootstrap';
 import FirebaseImage from 'components/general/FirebaseImage';
-import Newline from 'components/general/Newline';
+import { db } from 'database';
 
-export default function FormCard({
-	project: { name, desc, tags, demo, code, image }
-}: {
-	project: Project;
-}) {
-	return (
-		<Card>
-			{image && (
-				<FirebaseImage image={image} prop='src'>
-					<Card.Img variant='top' />
-				</FirebaseImage>
-			)}
+type FormCardProps = { id: string; project: Project };
+type FormCardState = { temp: Partial<Project> };
 
-			<Card.Body>
-				{name && <Card.Title>{name}</Card.Title>}
-				{desc && (
-					<Card.Text>
-						<Newline>{desc}</Newline>
-					</Card.Text>
-				)}
-				{demo && <Card.Link href={demo}>Live demo</Card.Link>}
-				{code && <Card.Link href={code}>Source code</Card.Link>}
-			</Card.Body>
+export default class FormCard extends React.Component<
+	FormCardProps,
+	FormCardState
+> {
+	constructor(props: FormCardProps) {
+		super(props);
 
-			{tags && tags.length > 0 && (
-				<Card.Footer>
-					{tags.map(tag => (
-						<Badge key={tag} className='mr-2' variant='dark'>
-							{tag}
-						</Badge>
-					))}
-				</Card.Footer>
-			)}
-		</Card>
-	);
+		this.state = {
+			temp: {}
+		};
+	}
+
+	componentDidUpdate() {
+		Object.entries(this.state.temp).forEach(([key, value]) => {
+			if (this.props.project[key as keyof Project] === value)
+				console.log('removing [key] from state.temp');
+		});
+	}
+
+	render() {
+		return (
+			<Card>
+				<Form onSubmit={e => e.preventDefault()}>
+					{this.props.project.image && (
+						<FirebaseImage
+							image={this.props.project.image}
+							prop='src'>
+							<Card.Img variant='top' />
+						</FirebaseImage>
+					)}
+
+					<Card.Body>
+						<Form.Group controlId='name'>
+							<Form.Label>Title</Form.Label>
+							<Form.Control
+								value={
+									this.state.temp.name ??
+									this.props.project.name ??
+									''
+								}
+								onChange={this.onChange}
+								autoComplete='off'
+							/>
+						</Form.Group>
+
+						<Form.Group controlId='desc'>
+							<Form.Label>Description</Form.Label>
+							<Form.Control
+								as='textarea'
+								value={
+									this.state.temp.desc ??
+									this.props.project.desc ??
+									''
+								}
+								onChange={this.onChange}
+								autoComplete='off'
+							/>
+						</Form.Group>
+
+						<Form.Group controlId='demo'>
+							<Form.Label>Live demo</Form.Label>
+							<Form.Control
+								type='url'
+								value={
+									this.state.temp.demo ??
+									this.props.project.demo ??
+									''
+								}
+								onChange={this.onChange}
+								autoComplete='off'
+							/>
+						</Form.Group>
+
+						<Form.Group controlId='code'>
+							<Form.Label>Source code</Form.Label>
+							<Form.Control
+								type='url'
+								value={
+									this.state.temp.code ??
+									this.props.project.code ??
+									''
+								}
+								onChange={this.onChange}
+								autoComplete='off'
+							/>
+						</Form.Group>
+					</Card.Body>
+
+					{this.props.project.tags &&
+						this.props.project.tags.length > 0 && (
+							<Card.Footer>
+								{this.props.project.tags.map(tag => (
+									<Badge
+										key={tag}
+										className='mr-2'
+										variant='dark'>
+										{tag}
+									</Badge>
+								))}
+							</Card.Footer>
+						)}
+				</Form>
+			</Card>
+		);
+	}
+
+	onChange = async ({
+		target: { id, value }
+	}: React.ChangeEvent<HTMLInputElement>) => {
+		switch (id) {
+			case 'name':
+				this.setState(state => ({
+					temp: { ...state.temp, name: value }
+				}));
+				break;
+
+			case 'desc':
+				this.setState(state => ({
+					temp: { ...state.temp, desc: value }
+				}));
+				break;
+
+			case 'demo':
+				this.setState(state => ({
+					temp: { ...state.temp, demo: value }
+				}));
+				break;
+
+			case 'code':
+				this.setState(state => ({
+					temp: { ...state.temp, code: value }
+				}));
+				break;
+		}
+
+		await this.saveChanges();
+	};
+
+	saveChanges = debounce(async () => {
+		db.collection('projects')
+			.doc(this.props.id)
+			.set(this.state.temp, { merge: true })
+			.catch(({ message }) => console.error(message));
+	}, 1000);
 }
 
 /*

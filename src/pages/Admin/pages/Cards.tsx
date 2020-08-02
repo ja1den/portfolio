@@ -4,7 +4,7 @@ import { db } from 'database';
 import { Project, projectConverter } from 'models/Project';
 
 import { CardColumns } from 'react-bootstrap';
-import ViewCard from 'components/cards/ViewCard';
+import FormCard from 'components/cards/FormCard';
 
 type ProjectType = firebase.firestore.QueryDocumentSnapshot<Project>;
 
@@ -21,7 +21,11 @@ export default function Cards() {
 	return (
 		<CardColumns>
 			{projects.map(project => (
-				<ViewCard key={project.id} project={project.data()} />
+				<FormCard
+					key={project.id}
+					id={project.id}
+					project={project.data()}
+				/>
 			))}
 		</CardColumns>
 	);
