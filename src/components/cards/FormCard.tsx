@@ -1,14 +1,16 @@
 import React from 'react';
 import debounce from 'debounce';
 
-import { firebase, db } from 'database';
+import { firebase, db, storage } from 'database';
 import { Project } from 'models/Project';
 
 import { Card, Form, InputGroup, FormControl, Button } from 'react-bootstrap';
 import Image from 'components/general/Image';
 
+type FileType = firebase.storage.Reference;
+
 type FormCardProps = { id: string; project: Project };
-type FormCardState = { temp: Partial<Project> };
+type FormCardState = { files: FileType[]; temp: Partial<Project> };
 
 type FormProjectUpdate = Partial<
 	Record<keyof Project, string | string[] | firebase.firestore.FieldValue>
@@ -22,17 +24,31 @@ export default class FormCard extends React.Component<
 		super(props);
 
 		this.state = {
+			files: [],
 			temp: {}
 		};
 	}
 
-	componentDidUpdate() {
+	async componentDidMount() {
+		await this.syncFiles();
+	}
+
+	async componentDidUpdate() {
+		await this.syncFiles();
+
 		Object.entries(this.state.temp).forEach(([key, value]) => {
-			if (this.props.project[key as keyof Project] === value)
+			const propValue = this.props.project[key as keyof Project];
+
+			const removeKey = () =>
 				this.setState(state => {
 					delete state.temp[key as keyof Project];
 					return state;
 				});
+
+			if (Array.isArray(propValue) && Array.isArray(value))
+				if (this.arraysEqual(propValue, value)) removeKey();
+
+			if (propValue === value || (!propValue && !value)) removeKey();
 		});
 	}
 
@@ -42,6 +58,7 @@ export default class FormCard extends React.Component<
 		const demo = this.state.temp.demo ?? this.props.project.demo ?? '';
 		const code = this.state.temp.code ?? this.props.project.code ?? '';
 		const tags = this.state.temp.tags ?? this.props.project.tags ?? [];
+		const image = this.state.temp.image ?? this.props.project.image ?? '';
 
 		return (
 			<Card>
@@ -90,6 +107,27 @@ export default class FormCard extends React.Component<
 								onChange={this.onChange}
 								autoComplete='off'
 							/>
+						</Form.Group>
+
+						<Form.Group controlId='image'>
+							<Form.Label>Image</Form.Label>
+							<Form.Control
+								as='select'
+								value={image}
+								onChange={this.onChange}>
+								<option value=''></option>
+								{this.state.files.map(file => (
+									<option
+										key={file.fullPath}
+										value={file.fullPath}>
+										{
+											file.name.match(
+												/(?<name>\w+)(?=.\w+)/g
+											)?.[0]!
+										}
+									</option>
+								))}
+							</Form.Control>
 						</Form.Group>
 					</Card.Body>
 
@@ -167,6 +205,12 @@ export default class FormCard extends React.Component<
 					temp: { ...state.temp, tags }
 				}));
 				break;
+
+			case 'image':
+				this.setState(state => ({
+					temp: { ...state.temp, image: value }
+				}));
+				break;
 		}
 
 		await this.saveChanges();
@@ -199,6 +243,23 @@ export default class FormCard extends React.Component<
 			);
 		}
 	};
+
+	syncFiles = async () => {
+		this.setState({
+			files: (await storage.ref('/images').listAll()).items
+		});
+	};
+
+	arraysEqual(a1: any[], a2: any[]) {
+		if (a1 === a2) return true;
+		if (a1 == null || a2 == null) return false;
+		if (a1.length !== a2.length) return false;
+
+		for (var i = 0; i < a1.length; ++i) {
+			if (a1[i] !== a2[i]) return false;
+		}
+		return true;
+	}
 
 	/*
 

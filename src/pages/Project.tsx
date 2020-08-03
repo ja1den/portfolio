@@ -16,6 +16,8 @@ export default class ProjectPage extends React.Component<
 	PageProps,
 	ProjectPageState
 > {
+	unsubscribe?: Function;
+
 	constructor(props: PageProps) {
 		super(props);
 
@@ -25,13 +27,18 @@ export default class ProjectPage extends React.Component<
 	}
 
 	async componentDidMount() {
-		db.collection('projects')
+		this.unsubscribe = db
+			.collection('projects')
 			.withConverter(projectConverter)
 			.onSnapshot(snapshot =>
 				this.setState({
 					projects: snapshot.docs
 				})
 			);
+	}
+
+	componentWillUnmount() {
+		this.unsubscribe?.();
 	}
 
 	render() {
