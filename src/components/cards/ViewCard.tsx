@@ -4,7 +4,7 @@ import { Project } from 'models/Project';
 
 import { Card, Badge } from 'react-bootstrap';
 
-import FirebaseImage from 'components/general/FirebaseImage';
+import Image from 'components/general/Image';
 import Newline from 'components/general/Newline';
 
 export default function ViewCard({
@@ -15,9 +15,9 @@ export default function ViewCard({
 	return (
 		<Card>
 			{image && (
-				<FirebaseImage image={image} prop='src'>
+				<Image image={image} prop='src'>
 					<Card.Img variant='top' />
-				</FirebaseImage>
+				</Image>
 			)}
 
 			<Card.Body>

@@ -1,14 +1,18 @@
 import React from 'react';
 import debounce from 'debounce';
 
+import { firebase, db } from 'database';
 import { Project } from 'models/Project';
 
-import { Card, Form, Badge } from 'react-bootstrap';
-import FirebaseImage from 'components/general/FirebaseImage';
-import { db } from 'database';
+import { Card, Form, InputGroup, FormControl, Button } from 'react-bootstrap';
+import Image from 'components/general/Image';
 
 type FormCardProps = { id: string; project: Project };
 type FormCardState = { temp: Partial<Project> };
+
+type FormProjectUpdate = Partial<
+	Record<keyof Project, string | string[] | firebase.firestore.FieldValue>
+>;
 
 export default class FormCard extends React.Component<
 	FormCardProps,
@@ -25,31 +29,34 @@ export default class FormCard extends React.Component<
 	componentDidUpdate() {
 		Object.entries(this.state.temp).forEach(([key, value]) => {
 			if (this.props.project[key as keyof Project] === value)
-				console.log('removing [key] from state.temp');
+				this.setState(state => {
+					delete state.temp[key as keyof Project];
+					return state;
+				});
 		});
 	}
 
 	render() {
+		const name = this.state.temp.name ?? this.props.project.name ?? '';
+		const desc = this.state.temp.desc ?? this.props.project.desc ?? '';
+		const demo = this.state.temp.code ?? this.props.project.code ?? '';
+		const code = this.state.temp.demo ?? this.props.project.demo ?? '';
+		const tags = this.state.temp.tags ?? this.props.project.tags ?? [];
+
 		return (
 			<Card>
 				<Form onSubmit={e => e.preventDefault()}>
 					{this.props.project.image && (
-						<FirebaseImage
-							image={this.props.project.image}
-							prop='src'>
+						<Image image={this.props.project.image} prop='src'>
 							<Card.Img variant='top' />
-						</FirebaseImage>
+						</Image>
 					)}
 
 					<Card.Body>
 						<Form.Group controlId='name'>
 							<Form.Label>Title</Form.Label>
 							<Form.Control
-								value={
-									this.state.temp.name ??
-									this.props.project.name ??
-									''
-								}
+								value={name}
 								onChange={this.onChange}
 								autoComplete='off'
 							/>
@@ -59,11 +66,7 @@ export default class FormCard extends React.Component<
 							<Form.Label>Description</Form.Label>
 							<Form.Control
 								as='textarea'
-								value={
-									this.state.temp.desc ??
-									this.props.project.desc ??
-									''
-								}
+								value={desc}
 								onChange={this.onChange}
 								autoComplete='off'
 							/>
@@ -73,11 +76,7 @@ export default class FormCard extends React.Component<
 							<Form.Label>Live demo</Form.Label>
 							<Form.Control
 								type='url'
-								value={
-									this.state.temp.demo ??
-									this.props.project.demo ??
-									''
-								}
+								value={demo}
 								onChange={this.onChange}
 								autoComplete='off'
 							/>
@@ -87,30 +86,42 @@ export default class FormCard extends React.Component<
 							<Form.Label>Source code</Form.Label>
 							<Form.Control
 								type='url'
-								value={
-									this.state.temp.code ??
-									this.props.project.code ??
-									''
-								}
+								value={code}
 								onChange={this.onChange}
 								autoComplete='off'
 							/>
 						</Form.Group>
 					</Card.Body>
 
-					{this.props.project.tags &&
-						this.props.project.tags.length > 0 && (
-							<Card.Footer>
-								{this.props.project.tags.map(tag => (
-									<Badge
-										key={tag}
-										className='mr-2'
-										variant='dark'>
-										{tag}
-									</Badge>
-								))}
-							</Card.Footer>
-						)}
+					<Card.Footer>
+						<Form.Label>Tags</Form.Label>
+						{tags?.map((tag, i) => (
+							<Form.Group key={`${tag}-${i.toString()}`}>
+								<InputGroup>
+									<FormControl
+										id='tag'
+										name={i.toString()}
+										value={tag ?? ''}
+										onChange={this.onChange}
+										autoComplete='off'
+									/>
+									<InputGroup.Append>
+										<Button
+											variant='danger'
+											onClick={() => this.deleteTag(i)}>
+											Delete
+										</Button>
+									</InputGroup.Append>
+								</InputGroup>
+							</Form.Group>
+						))}
+						<Button
+							variant='success'
+							onClick={this.createTag}
+							block>
+							New Tag
+						</Button>
+					</Card.Footer>
 				</Form>
 			</Card>
 		);
@@ -148,10 +159,82 @@ export default class FormCard extends React.Component<
 		await this.saveChanges();
 	};
 
+	createTag = async () => {
+		this.setState(
+			state => ({
+				temp: {
+					...state.temp,
+					tags: [...(this.props.project.tags ?? []), '']
+				}
+			}),
+			this.saveChanges
+		);
+	};
+
+	deleteTag = async (index: number) => {
+		if (index !== undefined)
+			this.setState(state => {
+				[...(this.props.project.tags ?? [])].splice(index, 1);
+				return state;
+			}, this.saveChanges);
+	};
+
+	/*
+
+	switch (name) {
+		case 'create':
+			this.setState(
+				state => ({
+					project: {
+						...state.project,
+						tags: [...(state.project.tags ?? []), '']
+					}
+				}),
+				this.updateProject
+			);
+			this.edits++;
+			break;
+
+		case 'delete':
+			if (index !== undefined)
+				this.setState(state => {
+					state.project.tags!.splice(index, 1);
+					return state;
+				}, this.updateProject);
+			this.edits++;
+			break;
+
+		case 'image':
+			this.setState(
+				state => ({
+					project: {
+						...state.project,
+						image: ''
+					},
+					image: undefined,
+					file: undefined
+				}),
+				this.updateProject
+			);
+	}
+
+	*/
+
 	saveChanges = debounce(async () => {
+		const data = Object.entries(this.state.temp).reduce(
+			(data: FormProjectUpdate, tuple) => ({
+				...data,
+				[tuple[0]]:
+					tuple[1] && tuple[1]?.length !== 0
+						? tuple[1]
+						: firebase.firestore.FieldValue.delete()
+			}),
+			{}
+		);
+
 		db.collection('projects')
 			.doc(this.props.id)
-			.set(this.state.temp, { merge: true })
+			.set(data, { merge: true })
 			.catch(({ message }) => console.error(message));
 	}, 1000);
 }

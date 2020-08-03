@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 
 import { Card, Button, Table } from 'react-bootstrap';
-import FirebaseImage from 'components/general/FirebaseImage';
+import Image from 'components/general/Image';
 
 type FileType = firebase.storage.Reference;
 type MetaType = firebase.storage.FullMetadata;
@@ -37,7 +37,7 @@ export default function FileCard({ file, onChange }: FileCardProps) {
 
 	return (
 		<Card>
-			<FirebaseImage image={file.fullPath}>
+			<Image image={file.fullPath}>
 				<Card.Img variant='top'></Card.Img>
 				<Card.Body>
 					<Card.Title>
@@ -79,7 +79,7 @@ export default function FileCard({ file, onChange }: FileCardProps) {
 						Delete
 					</Button>
 				</Card.Body>
-			</FirebaseImage>
+			</Image>
 		</Card>
 	);
 }

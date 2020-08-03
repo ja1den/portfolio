@@ -6,9 +6,9 @@ import React, {
 } from 'react';
 import { storage } from 'database';
 
-type FirebaseImageProps = { image: string; prop?: string };
+type ImageProps = { image: string; prop?: string };
 
-const FirebaseImage: React.FunctionComponent<FirebaseImageProps> = ({
+const Image: React.FunctionComponent<ImageProps> = ({
 	image,
 	prop,
 	children
@@ -55,4 +55,4 @@ const FirebaseImage: React.FunctionComponent<FirebaseImageProps> = ({
 	);
 };
 
-export default FirebaseImage;
+export default Image;
