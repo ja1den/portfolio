@@ -39,8 +39,8 @@ export default class FormCard extends React.Component<
 	render() {
 		const name = this.state.temp.name ?? this.props.project.name ?? '';
 		const desc = this.state.temp.desc ?? this.props.project.desc ?? '';
-		const demo = this.state.temp.code ?? this.props.project.code ?? '';
-		const code = this.state.temp.demo ?? this.props.project.demo ?? '';
+		const demo = this.state.temp.demo ?? this.props.project.demo ?? '';
+		const code = this.state.temp.code ?? this.props.project.code ?? '';
 		const tags = this.state.temp.tags ?? this.props.project.tags ?? [];
 
 		return (
@@ -96,13 +96,14 @@ export default class FormCard extends React.Component<
 					<Card.Footer>
 						<Form.Label>Tags</Form.Label>
 						{tags?.map((tag, i) => (
-							<Form.Group key={`${tag}-${i.toString()}`}>
+							<Form.Group key={i}>
 								<InputGroup>
 									<FormControl
 										id='tag'
-										name={i.toString()}
 										value={tag ?? ''}
-										onChange={this.onChange}
+										onChange={e =>
+											this.onChange(e as any, i)
+										}
 										autoComplete='off'
 									/>
 									<InputGroup.Append>
@@ -127,9 +128,10 @@ export default class FormCard extends React.Component<
 		);
 	}
 
-	onChange = async ({
-		target: { id, value }
-	}: React.ChangeEvent<HTMLInputElement>) => {
+	onChange = async (
+		{ target: { id, value } }: React.ChangeEvent<HTMLInputElement>,
+		index?: number
+	) => {
 		switch (id) {
 			case 'name':
 				this.setState(state => ({
@@ -154,17 +156,29 @@ export default class FormCard extends React.Component<
 					temp: { ...state.temp, code: value }
 				}));
 				break;
+
+			case 'tag':
+				let tags = [
+					...(this.state.temp.tags ?? this.props.project.tags ?? [])
+				];
+				tags[index!] = value;
+
+				this.setState(state => ({
+					temp: { ...state.temp, tags }
+				}));
+				break;
 		}
 
 		await this.saveChanges();
 	};
 
 	createTag = async () => {
+		const tags = this.state.temp.tags ?? this.props.project.tags ?? [];
 		this.setState(
 			state => ({
 				temp: {
 					...state.temp,
-					tags: [...(this.props.project.tags ?? []), '']
+					tags: [...tags, '']
 				}
 			}),
 			this.saveChanges
@@ -172,11 +186,18 @@ export default class FormCard extends React.Component<
 	};
 
 	deleteTag = async (index: number) => {
-		if (index !== undefined)
-			this.setState(state => {
-				[...(this.props.project.tags ?? [])].splice(index, 1);
-				return state;
-			}, this.saveChanges);
+		if (index !== undefined) {
+			const tags = this.state.temp.tags ?? this.props.project.tags ?? [];
+			this.setState(
+				state => ({
+					temp: {
+						...state.temp,
+						tags: [...tags].filter((_tag, i) => i !== index)
+					}
+				}),
+				this.saveChanges
+			);
+		}
 	};
 
 	/*
