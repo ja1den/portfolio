@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { storage } from 'database';
 
 import { CardColumns, Card, Form, InputGroup, Button } from 'react-bootstrap';
@@ -6,72 +6,105 @@ import FileCard from 'components/cards/FileCard';
 
 type FileType = firebase.storage.Reference;
 
-export default function Files() {
-	const [files, setFiles] = useState<FileType[]>([]);
+type FilesState = {
+	files: FileType[];
+	file?: File;
+	read?: string;
+};
 
-	const [file, setFile] = useState<File | null>(null);
-	const [read, setRead] = useState<string | null>(null);
+export default class Files extends React.Component<{}, FilesState> {
+	mounted: boolean = true;
 
-	const syncFiles = async () => {
-		setFiles((await storage.ref('/images').listAll()).items);
-	};
+	constructor(props: {}) {
+		super(props);
 
-	const onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		this.state = {
+			files: []
+		};
+	}
+
+	async componentDidMount() {
+		await this.syncFiles();
+	}
+
+	componentWillUnmount() {
+		this.mounted = false;
+	}
+
+	render() {
+		return (
+			<CardColumns>
+				{this.state.files.map(file => (
+					<FileCard
+						key={file.name}
+						file={file}
+						onChange={this.syncFiles}
+					/>
+				))}
+				<Card>
+					{this.state.read && (
+						<Card.Img variant='top' src={this.state.read} />
+					)}
+					<Card.Body>
+						<Form.Group controlId='image'>
+							<InputGroup className='mb-3'>
+								<Form.File custom>
+									<Form.File.Input
+										value=''
+										accept='image/*'
+										onChange={this.onChange}
+									/>
+									<Form.File.Label>
+										{this.state.file?.name ??
+											'Select image'}
+									</Form.File.Label>
+								</Form.File>
+							</InputGroup>
+						</Form.Group>
+						<Button
+							variant='success'
+							block
+							disabled={!this.state.read}
+							onClick={this.onClick}>
+							Upload
+						</Button>
+					</Card.Body>
+				</Card>
+			</CardColumns>
+		);
+	}
+
+	onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const target = event.target.files?.[0]!;
 		const reader = new FileReader();
 
-		reader.onloadend = () => {
-			setFile(target);
-			setRead(reader.result as string);
-		};
+		reader.onloadend = () =>
+			this.setState({
+				file: target,
+				read: reader.result as string
+			});
 
 		reader.readAsDataURL(target);
 	};
 
-	const onClick = async () => {
-		if (file !== null) {
-			await storage.ref(`images/${file.name}`).put(file);
+	onClick = async () => {
+		if (this.state.file !== undefined) {
+			await storage
+				.ref(`images/${this.state.file.name}`)
+				.put(this.state.file);
 
-			setFile(null);
-			setRead(null);
+			this.setState({
+				file: undefined,
+				read: undefined
+			});
 
-			syncFiles();
+			this.syncFiles();
 		}
 	};
 
-	useEffect(() => void syncFiles(), []);
-
-	return (
-		<CardColumns>
-			{files.map(file => (
-				<FileCard key={file.name} file={file} onChange={syncFiles} />
-			))}
-			<Card>
-				{read && <Card.Img variant='top' src={read} />}
-				<Card.Body>
-					<Form.Group controlId='image'>
-						<InputGroup className='mb-3'>
-							<Form.File custom>
-								<Form.File.Input
-									value=''
-									accept='image/*'
-									onChange={onChange}
-								/>
-								<Form.File.Label>
-									{file?.name ?? 'Select image'}
-								</Form.File.Label>
-							</Form.File>
-						</InputGroup>
-					</Form.Group>
-					<Button
-						variant='success'
-						block
-						disabled={!read}
-						onClick={onClick}>
-						Upload
-					</Button>
-				</Card.Body>
-			</Card>
-		</CardColumns>
-	);
+	syncFiles = async () =>
+		storage
+			.ref('/images')
+			.listAll()
+			.then(res => this.mounted && this.setState({ files: res.items }));
 }

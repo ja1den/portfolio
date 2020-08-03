@@ -20,6 +20,8 @@ export default class FormCard extends React.Component<
 	FormCardProps,
 	FormCardState
 > {
+	mounted: boolean = true;
+
 	constructor(props: FormCardProps) {
 		super(props);
 
@@ -50,6 +52,10 @@ export default class FormCard extends React.Component<
 
 			if (propValue === value || (!propValue && !value)) removeKey();
 		});
+	}
+
+	componentWillUnmount() {
+		this.mounted = false;
 	}
 
 	render() {
@@ -244,11 +250,11 @@ export default class FormCard extends React.Component<
 		}
 	};
 
-	syncFiles = async () => {
-		this.setState({
-			files: (await storage.ref('/images').listAll()).items
-		});
-	};
+	syncFiles = async () =>
+		storage
+			.ref('/images')
+			.listAll()
+			.then(res => this.mounted && this.setState({ files: res.items }));
 
 	arraysEqual(a1: any[], a2: any[]) {
 		if (a1 === a2) return true;
