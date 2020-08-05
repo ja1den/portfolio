@@ -5,5 +5,8 @@ service cloud.firestore {
 			allow read;
 			allow write: if request.auth.uid == 'm2aLSKU1KRdUl5XAUxVkQCuC1xA3';
 		}
+		match /scores/{document=**} {
+			allow list, create;
+		}
   }
 }
