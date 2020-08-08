@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link
+			rel="shortcut icon"
+			type="image/x-icon"
+			href="https://cdn.roundsquare.site/roundsquare/favicon.ico"
+		/>
+		<title>Jadie Wadie</title>
+
+		<style>
+			:root {
+				--size: 128px;
+			}
+
+			html,
+			body {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+
+				height: 100%;
+				margin: 0;
+
+				perspective: calc(var(--size) * 5);
+				background-color: #111;
+			}
+
+			.cube {
+				position: relative;
+
+				width: var(--size);
+				height: var(--size);
+
+				transform: translateZ(calc(var(--size) * -1.5)) rotateX(-45deg)
+					rotateY(-45deg);
+				transform-style: preserve-3d;
+
+				transition: transform 1s;
+			}
+
+			.cube .face {
+				position: absolute;
+
+				width: calc(var(--size) * 0.9);
+				height: calc(var(--size) * 0.9);
+
+				background-color: #fff;
+				border: 2px solid #000;
+
+				border-radius: calc(var(--size) * 0.1);
+			}
+
+			.cube .face:nth-of-type(1) {
+				transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+			}
+
+			.cube .face:nth-of-type(2) {
+				transform: rotateY(0deg) translateZ(calc(var(--size) / 2));
+			}
+
+			.cube .face:nth-of-type(3) {
+				transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+			}
+		</style>
+	</head>
+	<body>
+		<div class="cube">
+			<div class="face"></div>
+			<div class="face"></div>
+			<div class="face"></div>
+		</div>
+	</body>
+</html>
