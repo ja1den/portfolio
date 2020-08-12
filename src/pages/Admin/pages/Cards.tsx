@@ -3,7 +3,7 @@ import { db } from 'database';
 
 import { Project, projectConverter } from 'models/Project';
 
-import { CardColumns } from 'react-bootstrap';
+import { CardColumns, Card, Button } from 'react-bootstrap';
 import FormCard from 'components/cards/FormCard';
 
 type ProjectType = firebase.firestore.QueryDocumentSnapshot<Project>;
@@ -18,6 +18,10 @@ export default function Cards() {
 			.onSnapshot(snapshot => setProjects(snapshot.docs));
 	}, []);
 
+	const onClick = async () => {
+		db.collection('projects').add({});
+	};
+
 	return (
 		<CardColumns>
 			{projects.map(project => (
@@ -27,6 +31,13 @@ export default function Cards() {
 					project={project.data()}
 				/>
 			))}
+			<Card>
+				<Card.Body>
+					<Button variant='success' block onClick={onClick}>
+						New
+					</Button>
+				</Card.Body>
+			</Card>
 		</CardColumns>
 	);
 }
