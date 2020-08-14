@@ -7,7 +7,6 @@ import ProjectPage from 'pages/Project';
 import AdminPage from 'pages/Admin';
 
 import 'halfmoon/css/halfmoon.min.css';
-import halfmoon from 'halfmoon';
 
 const entries: App.Entry[] = [
 	{
@@ -29,7 +28,5 @@ const entries: App.Entry[] = [
 		to: '/projects'
 	}
 ];
-
-console.log(halfmoon);
 
 ReactDOM.render(<App entries={entries} />, document.getElementById('root'));

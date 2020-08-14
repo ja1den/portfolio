@@ -16,7 +16,6 @@
 		"debounce": "^1.2.0",
 		"firebase": "^7.17.1",
 		"firebase-admin": "^9.0.0",
-		"halfmoon": "^1.0.3",
 		"kleur": "^4.0.2",
 		"moment": "^2.27.0",
 		"prompts": "^2.3.2",

@@ -6,6 +6,8 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import Header, { HeaderProps } from 'components/general/Header';
 import Login from 'components/general/Login';
 
+import halfmoon from 'halfmoon';
+
 export type PageProps = {
 	user: firebase.User | null;
 };
@@ -57,6 +59,8 @@ class App extends React.Component<AppProps, AppState> {
 	}
 
 	componentDidMount() {
+		halfmoon.onDOMContentLoaded();
+
 		this.unsubscribe = auth().onAuthStateChanged(user =>
 			this.setState({ user })
 		);
