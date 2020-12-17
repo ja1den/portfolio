@@ -4,9 +4,9 @@
 
 ## Introduction
 
-My portfolio is designed to showcase my favourite projects, and to host my blog.
+This app is designed to showcase my favourite projects, and to host my blog.
 
-The app was built with [Next.js](https://nextjs.org/).
+I built it with [Next.js](https://nextjs.org/).
 
 ## Usage
 
