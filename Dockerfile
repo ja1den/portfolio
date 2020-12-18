@@ -4,7 +4,7 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY package*.json /app
+COPY package*.json ./
 
 RUN npm install
 
@@ -18,9 +18,9 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY package*.json /app
+COPY package*.json ./
 
-COPY --from=0 /app/.next /app/.next
+COPY --from=0 /app/.next ./.next
 
 RUN npm install --production
 
