@@ -1,4 +1,4 @@
-name: build
+name: publish
 
 on:
   - workflow_dispatch
@@ -17,6 +17,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: distributhor/workflow-webhook@v1
         env:
