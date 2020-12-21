@@ -6,12 +6,13 @@
 	},
 	"scripts": {
 		"build": "next build",
-		"dev": "next dev",
+		"dev": "next",
 		"lint": "sort-package-json && prettier -wu \"**\"",
 		"start": "next start"
 	},
 	"dependencies": {
 		"next": "10.0.3",
+		"normalize.css": "^8.0.1",
 		"react": "17.0.1",
 		"react-dom": "17.0.1"
 	},
