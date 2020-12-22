@@ -1,9 +1,15 @@
+/* Import */
+
+@import '../config.scss';
+
+/* Main */
+
 .header {
 	padding: 1rem;
 
-	border-bottom: 1px #fff solid;
+	border-bottom: 1px $col-a solid;
 
-	background-color: #161616;
+	background-color: $col-e;
 }
 
 .container {
