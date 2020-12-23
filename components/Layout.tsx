@@ -2,7 +2,7 @@ import styles from 'styles/components/layout.module.scss';
 
 import Head from 'next/head';
 
-import Header from 'components/header';
+import Header from 'components/Header';
 
 const Layout: React.FC = function ({ children }) {
 	return (
