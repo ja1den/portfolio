@@ -21,6 +21,12 @@
 	padding: 1rem;
 	margin-bottom: 1rem;
 
+	cursor: pointer;
+
+	&:hover {
+		transform: scale(1.005);
+	}
+
 	h2 {
 		margin: 0;
 		margin-bottom: 1rem;
