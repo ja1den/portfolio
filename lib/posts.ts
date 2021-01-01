@@ -2,27 +2,30 @@ import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 import matter from 'gray-matter';
+import remark from 'remark';
+
+import html from 'remark-html';
+import gfm from 'remark-gfm';
+
+const targetDirectory = join(process.cwd(), 'posts');
 
 export interface PostData {
 	id: string;
 	name: string;
 	date: string;
+	content?: string;
 }
 
 export function getPostData() {
-	const target = join(process.cwd(), 'posts');
-	const names = readdirSync(target);
+	const names = readdirSync(targetDirectory);
 
 	const data = names.map((name) => {
-		const id = name.replace(/\.md$/, '');
-		const path = join(target, name);
-
-		const contents = readFileSync(path, 'utf8');
-		const meta = matter(contents);
+		const content = readFileSync(join(targetDirectory, name), 'utf8');
+		const parsed = matter(content);
 
 		return {
-			id,
-			...meta.data,
+			id: name.replace(/\.md$/, ''),
+			...parsed.data,
 		} as PostData;
 	});
 
@@ -33,4 +36,29 @@ export function getPostData() {
 			return -1;
 		}
 	});
+}
+
+export function getPostIDs() {
+	return readdirSync(targetDirectory).map((name) => {
+		return {
+			params: {
+				id: name.replace(/\.md$/, ''),
+			},
+		};
+	});
+}
+
+export async function getPost(id: string) {
+	const content = readFileSync(join(targetDirectory, `${id}.md`), 'utf8');
+	const parsed = matter(content);
+
+	parsed.content = (
+		await remark().use(html).use(gfm).process(parsed.content)
+	).toString();
+
+	return {
+		id,
+		content: parsed.content,
+		...parsed.data,
+	} as PostData;
 }

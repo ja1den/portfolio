@@ -1,12 +1,12 @@
-import styles from 'styles/pages/index.module.scss';
-
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 
-import Layout from 'components/Layout';
-import Date from 'components/DateText';
+import { getPostData, PostData } from 'lib/posts';
 
-import { PostData, getPostData } from '../lib/posts';
+import DateText from 'components/DateText';
+import Layout from 'components/Layout';
+
+import styles from 'styles/pages/index.module.scss';
 
 export default function Home({ postData }: { postData: PostData[] }) {
 	return (
@@ -19,7 +19,7 @@ export default function Home({ postData }: { postData: PostData[] }) {
 							<li className={styles.item}>
 								<h2>{name}</h2>
 								<span>
-									<Date date={date} />
+									<DateText date={date} />
 								</span>
 							</li>
 						</Link>

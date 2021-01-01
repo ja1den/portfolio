@@ -1,11 +1,11 @@
 const DateText: React.FC<{ date: string }> = function ({ date }) {
-	const format = new Date(date).toLocaleDateString('en-us', {
+	const string = new Date(date).toLocaleDateString('en-us', {
 		year: 'numeric',
 		month: 'long',
 		day: 'numeric',
 	});
 
-	return <time dateTime={date}>{format}</time>;
+	return <time dateTime={date}>{string}</time>;
 };
 
 export default DateText;
