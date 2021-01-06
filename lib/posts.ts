@@ -10,9 +10,12 @@ import gfm from 'remark-gfm';
 const targetDirectory = join(process.cwd(), 'posts');
 
 export interface PostData {
-	id: string;
 	name: string;
 	date: string;
+	desc: string;
+
+	id: string;
+
 	content?: string;
 }
 
