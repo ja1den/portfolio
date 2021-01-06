@@ -1,22 +1,26 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 import Head from 'next/head';
 import Link from 'next/link';
+
+import { useRouter } from 'next/router'
 
 import classNames from 'classnames';
 
 const Layout: React.FC = function ({ children }) {
 	const [active, setActive] = useState(false);
+	const router = useRouter();
 
 	const classes = {
 		toggle: classNames('nav-item', 'nav-btn', active && 'active'),
 		list: classNames('header-nav', active && 'active'),
+		main: classNames(router.pathname !== '/' && 'pt-12')
 	};
 
 	return (
-		<div>
+		<Fragment>
 			<Head>
-				<link rel="icon" href="/favicon.ico" />
+				<link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
 				<title>Jaiden Douglas</title>
 			</Head>
 
@@ -63,8 +67,8 @@ const Layout: React.FC = function ({ children }) {
 				</div>
 			</nav>
 
-			{/* <main>{children}</main> */}
-		</div>
+			<main className={classes.main}>{children}</main>
+		</Fragment>
 	);
 };
 
