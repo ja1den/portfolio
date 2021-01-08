@@ -12,7 +12,6 @@ const targetDirectory = join(process.cwd(), 'posts');
 export interface PostData {
 	name: string;
 	date: string;
-	desc: string;
 
 	id: string;
 
