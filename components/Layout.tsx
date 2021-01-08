@@ -18,26 +18,16 @@ const Layout: React.FC = function ({ children }) {
 			<nav className='navigation'>
 				<section className='container'>
 					<Link href='/'>
-						<h5 className='title'>Jaiden</h5>
+						<h5 className='title'>Jaiden Douglas</h5>
 					</Link>
 
-					<div className='links'>
-						<Link href='/posts'>
-							Blog
-						</Link>
-
-						<Link href='/projects'>
-							Projects
-						</Link>
-
-						<Link href='https://github.com/ja1den'>
-							GitHub
-						</Link>
-					</div>
+					<a href='https://github.com/ja1den'>
+						GitHub
+					</a>
 				</section>
 			</nav>
 
-			{/* <main className='container'>{children}</main> */}
+			<main>{children}</main>
 		</Fragment>
 	);
 };
