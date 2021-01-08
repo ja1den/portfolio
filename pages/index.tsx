@@ -3,9 +3,9 @@ import Link from 'next/link';
 
 import { getPostData, PostData } from 'lib/posts';
 
-import DateText from 'components/DateText';
 import Layout from 'components/Layout';
 import Icon from 'components/Icon';
+import DateText from 'components/DateText';
 
 export default function Home({ postData }: { postData: PostData[] }) {
 	return (
@@ -26,27 +26,25 @@ export default function Home({ postData }: { postData: PostData[] }) {
 				</a>
 			</section>
 
-			{
-				/*
-
-				<section className='blog'>
-					<h2>Blog Posts</h2>
-					<ul>
-						{postData.slice(0, 10).map(({ id, name, date }) => (
-							<article key={id}>
-								<Link href={'/posts/' + id}>
-									<h3>{name}</h3>
-								</Link>
-								<span>
-									<DateText date={date} />
-								</span>
-							</article>
-						))}
-					</ul>
+			{/*
+				<section className='container projects'>
+					<h3>Projects</h3>
 				</section>
+			*/}
 
-				*/
-			}
+			<section className='container blog'>
+				<h3>Blog Posts</h3>
+				<ul>
+					{postData.slice(0, 10).map(({ id, name, date }) => (
+						<article key={id}>
+							<Link href={'/posts/' + id}>
+								<a><h4>{name}</h4></a>
+							</Link>
+							<DateText date={date} />
+						</article>
+					))}
+				</ul>
+			</section>
 		</Layout>
 	);
 }

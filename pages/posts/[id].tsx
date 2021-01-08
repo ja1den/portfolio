@@ -1,52 +1,41 @@
-import React, { useEffect } from 'react';
-import hljs from 'highlight.js';
-
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 
 import { getPostIDs, getPost, PostData } from 'lib/posts';
 
-import DateText from 'components/DateText';
 import Layout from 'components/Layout';
+import DateText from 'components/DateText';
 
 export default function Post({ postData }: { postData: PostData }) {
-	useEffect(() => {
-		hljs.initHighlighting();
-	}, []);
-
 	return (
 		<Layout>
-			<Head>
-				<title>{postData.name}</title>
-			</Head>
+			<Head><title>{postData.name}</title></Head>
 
-			<section className="row">
-				<div className="content col-6 offset-center">
-					<header>
-						<h2>{postData.name}</h2>
-						<DateText date={postData.date} />
-					</header>
+			<section className='container post'>
+				<header>
+					<h3>{postData.name}</h3>
+					<DateText date={postData.date} />
+				</header>
 
-					<hr />
+				<hr />
 
-					<div dangerouslySetInnerHTML={{ __html: postData.content! }} />
-				</div>
+				<article dangerouslySetInnerHTML={{ __html: postData.content! }} />
 			</section>
 		</Layout>
 	);
 }
 
-export const getStaticProps: GetStaticProps = async function ({ params }) {
+export const getStaticProps: GetStaticProps<{}, { id: string }> = async function ({ params }) {
 	return {
 		props: {
-			postData: await getPost(params!.id as string),
-		},
+			postData: await getPost(params!.id)
+		}
 	};
 };
 
 export async function getStaticPaths() {
 	return {
 		paths: getPostIDs(),
-		fallback: false,
+		fallback: false
 	};
 }
