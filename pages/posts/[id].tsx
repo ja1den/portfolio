@@ -20,16 +20,18 @@ export default function Post({ postData }: { postData: PostData }) {
 				<title>{postData.name}</title>
 			</Head>
 
-			<article>
-				<header>
-					<h2>{postData.name}</h2>
-					<DateText date={postData.date} />
-				</header>
+			<section className="row">
+				<div className="content col-6 offset-center">
+					<header>
+						<h2>{postData.name}</h2>
+						<DateText date={postData.date} />
+					</header>
 
-				<hr />
+					<hr />
 
-				<div dangerouslySetInnerHTML={{ __html: postData.content! }} />
-			</article>
+					<div dangerouslySetInnerHTML={{ __html: postData.content! }} />
+				</div>
+			</section>
 		</Layout>
 	);
 }

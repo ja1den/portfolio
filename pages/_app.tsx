@@ -1,6 +1,6 @@
 import { AppProps } from 'next/app';
 
-import 'cirrus-ui';
+import 'styles/main.scss';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return <Component {...pageProps} />;
