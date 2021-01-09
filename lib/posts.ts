@@ -11,7 +11,7 @@ import gfm from 'remark-gfm';
 
 // Global
 
-const targetDirectory = join(process.cwd(), 'posts');
+const targetDirectory = join(process.cwd(), 'content', 'posts');
 
 export interface PostData {
 	name: string;
