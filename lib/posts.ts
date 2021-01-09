@@ -1,3 +1,5 @@
+// Import
+
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -6,6 +8,8 @@ import remark from 'remark';
 
 import html from 'remark-html';
 import gfm from 'remark-gfm';
+
+// Global
 
 const targetDirectory = join(process.cwd(), 'posts');
 
@@ -18,6 +22,8 @@ export interface PostData {
 	content?: string;
 }
 
+// Export
+
 export function getPostData() {
 	const names = readdirSync(targetDirectory);
 
@@ -27,7 +33,7 @@ export function getPostData() {
 
 		return {
 			id: name.replace(/\.md$/, ''),
-			...parsed.data,
+			...parsed.data
 		} as PostData;
 	});
 
@@ -45,7 +51,7 @@ export function getPostIDs() {
 		return {
 			params: {
 				id: name.replace(/\.md$/, ''),
-			},
+			}
 		};
 	});
 }
@@ -61,6 +67,6 @@ export async function getPost(id: string) {
 	return {
 		id,
 		content: parsed.content,
-		...parsed.data,
+		...parsed.data
 	} as PostData;
 }
