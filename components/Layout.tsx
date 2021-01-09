@@ -18,7 +18,7 @@ const Layout: React.FC = function ({ children }) {
 			<nav className='navigation'>
 				<section className='container'>
 					<Link href='/'>
-						<h5 className='title'>Jaiden Douglas</h5>
+						<a><h5 className='title'>Jaiden Douglas</h5></a>
 					</Link>
 
 					<a href='https://github.com/ja1den'>
