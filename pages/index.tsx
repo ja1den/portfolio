@@ -1,13 +1,19 @@
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 
+import { getProjectData, ProjectData } from 'lib/projects';
 import { getPostData, PostData } from 'lib/posts';
 
 import Layout from 'components/Layout';
 import Icon from 'components/Icon';
 import DateText from 'components/DateText';
 
-export default function Home({ postData }: { postData: PostData[] }) {
+type HomeProps = {
+	projectData: ProjectData[],
+	postData: PostData[]
+};
+
+export default function Home({ projectData, postData }: HomeProps) {
 	return (
 		<Layout>
 			<section className='hero'>
@@ -26,24 +32,28 @@ export default function Home({ postData }: { postData: PostData[] }) {
 				</a>
 			</section>
 
-			{/*
-				<section className='container projects'>
-					<h3>Projects</h3>
-				</section>
-			*/}
+			<section className='container projects'>
+				<h3>Projects</h3>
+				{projectData.map(({ name, code, demo, post }) => (
+					<article key={name}>
+						<h4>{name}</h4>
+						<Link href={code}>Code</Link>
+						{demo && <Link href={demo}>Demo</Link>}
+						{post && <Link href={'/posts/' + post}>Post</Link>}
+					</article>
+				))}
+			</section>
 
-			<section className='container blog'>
+			<section className='container posts'>
 				<h3>Blog Posts</h3>
-				<ul>
-					{postData.slice(0, 10).map(({ id, name, date }) => (
-						<article key={id}>
-							<Link href={'/posts/' + id}>
-								<a><h4>{name}</h4></a>
-							</Link>
-							<DateText date={date} />
-						</article>
-					))}
-				</ul>
+				{postData.slice(0, 10).map(({ id, name, date }) => (
+					<article key={id}>
+						<Link href={'/posts/' + id}>
+							<a><h4>{name}</h4></a>
+						</Link>
+						<DateText date={date} />
+					</article>
+				))}
 			</section>
 		</Layout>
 	);
@@ -52,6 +62,7 @@ export default function Home({ postData }: { postData: PostData[] }) {
 export const getStaticProps: GetStaticProps = async function () {
 	return {
 		props: {
+			projectData: getProjectData(),
 			postData: getPostData(),
 		},
 	};

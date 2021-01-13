@@ -1,5 +1,3 @@
-// Import
-
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -9,20 +7,14 @@ import remark from 'remark';
 import html from 'remark-html';
 import gfm from 'remark-gfm';
 
-// Global
-
 const targetDirectory = join(process.cwd(), 'content', 'posts');
 
 export interface PostData {
 	name: string;
 	date: string;
-
 	id: string;
-
 	content?: string;
 }
-
-// Export
 
 export function getPostData() {
 	const names = readdirSync(targetDirectory);
