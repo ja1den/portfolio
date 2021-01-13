@@ -1,0 +1,10 @@
+projects:
+  - name: paintball
+    code: https://github.com/ja1den/paintball
+
+  - name: myriad
+    code: https://github.com/ja1den/myriad
+
+  - name: portfolio
+    code: https://github.com/ja1den/portfolio
+    demo: https://ja1den.me/
