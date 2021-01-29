@@ -1,31 +1,37 @@
 {
 	"name": "portfolio",
-	"homepage": "https://github.com/ja1den/portfolio#readme",
-	"bugs": {
-		"url": "https://github.com/ja1den/portfolio/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/ja1den/portfolio.git"
-	},
-	"license": "MIT",
-	"author": "Jaiden Douglas",
 	"scripts": {
-		"build": "snowpack build",
+		"build": "react-scripts build",
 		"lint": "sort-package-json",
-		"start": "snowpack dev"
+		"start": "react-scripts start"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
 	},
 	"dependencies": {
 		"react": "^17.0.1",
 		"react-dom": "^17.0.1"
 	},
 	"devDependencies": {
-		"@snowpack/plugin-dotenv": "^2.0.5",
-		"@snowpack/plugin-react-refresh": "^2.4.0",
-		"@snowpack/plugin-typescript": "^1.2.1",
-		"@types/react": "^17.0.0",
-		"@types/react-dom": "^17.0.0",
-		"snowpack": "^3.0.11",
+		"@types/node": "^12.19.15",
+		"@types/react": "^16.14.2",
+		"@types/react-dom": "^16.9.10",
+		"react-scripts": "4.0.1",
 		"sort-package-json": "^1.48.1",
 		"typescript": "^4.1.3"
 	}

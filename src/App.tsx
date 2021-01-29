@@ -2,6 +2,8 @@ import React from 'react';
 
 import './App.css';
 
-export default function App() {
-	return <h3>Jaiden Douglas</h3>
+const App: React.FC = () => {
+	return <h3>Jaiden Douglas</h3>;
 }
+
+export default App;
