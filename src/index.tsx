@@ -14,10 +14,12 @@ const App: React.FC = () => {
 	return (
 		<main className='terminal'>
 			{history.map((command, index) => (
-				<Prompt key={index} location="~" command={command} />
+				<Prompt key={index} location="~">{command}</Prompt>
 			))}
 			
-			<Prompt location='~' />
+			<Prompt location='~'>
+				<input></input>
+			</Prompt>
 		</main>
 	);
 }
