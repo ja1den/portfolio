@@ -29,6 +29,7 @@
 	"dependencies": {
 		"ansi-colors": "^4.1.1",
 		"ansi_up": "^5.0.0",
+		"normalize.css": "^8.0.1",
 		"react": "^17.0.1",
 		"react-dom": "^17.0.1"
 	},

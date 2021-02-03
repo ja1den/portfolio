@@ -1,5 +1,6 @@
 /* Imports */
 
+@import '../../node_modules/normalize.css/normalize.css';
 @import './colors.scss';
 
 /* Global */
@@ -12,4 +13,18 @@ body {
 		"Bitstream Vera Sans Mono", "Courier New", monospace, serif;
 
 	margin: 1rem;
+}
+
+/* Prompt */
+
+.prompt {
+	input {
+		background-color: inherit;
+		color: $foreground;
+
+		outline: 0;
+		border: 0;
+
+		width: calc(100vw - 4rem);
+	}
 }
