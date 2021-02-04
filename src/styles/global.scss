@@ -12,19 +12,32 @@ body {
 	font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono",
 		"Bitstream Vera Sans Mono", "Courier New", monospace, serif;
 
+	line-height: 1.25rem;
 	margin: 1rem;
+}
+
+span {
+	word-break: break-all;
 }
 
 /* Prompt */
 
-.prompt {
-	input {
-		background-color: inherit;
-		color: $foreground;
+.prompt, .input {
+	margin: 0;
 
-		outline: 0;
-		border: 0;
-
-		width: calc(100vw - 4rem);
+	span:nth-of-type(1) {
+		color: $brightCyan;
 	}
+
+	span:nth-of-type(2) {
+		color: $brightGreen;
+	}
+}
+
+.input span[contenteditable] {
+	outline: 0;
+	border: 0;
+
+	background-color: inherit;
+	color: $foreground;
 }
