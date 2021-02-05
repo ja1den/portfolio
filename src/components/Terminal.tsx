@@ -64,7 +64,7 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 			if (event.key === 'Enter') {
 				event.preventDefault();
 
-				const command =this.input.current.innerHTML;
+				const command = this.input.current.innerHTML;
 
 				this.setState(state => ({
 					entries: [...state.entries, [command, '']]
@@ -75,8 +75,14 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 		}
 	}
 
-	onClick = () => {
-		this.input.current?.focus();
+	onClick = (event: MouseEvent) => {
+		if (event.target instanceof Element) {
+			setImmediate(() => {
+				if (window.getSelection()?.toString().length === 0) {
+					this.input.current?.focus();
+				}
+			});
+		}
 	}
 }
 
