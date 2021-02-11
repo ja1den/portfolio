@@ -1,11 +1,13 @@
 import React, { Fragment } from 'react';
 
+import commands from '../commands';
+
 interface TerminalProps {
 	prompt: string;
 }
 
 interface TerminalState {
-	entries: [string, string][];
+	entries: string[];
 	content: string;
 }
 
@@ -42,7 +44,9 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 								<span>~</span>
 								<br />
 								<span>{this.props.prompt}&nbsp;</span>
-								<span>{entry[0]}</span>
+								<span>{entry}</span>
+								<br />
+								<span>-bash: {entry}: command not found</span>
 							</p>
 						</Fragment>
 					))}
@@ -67,7 +71,7 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 				const command = this.input.current.innerHTML;
 
 				this.setState(state => ({
-					entries: [...state.entries, [command, '']]
+					entries: [...state.entries, command]
 				}));
 
 				this.input.current.innerHTML = '';
