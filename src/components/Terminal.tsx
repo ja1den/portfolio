@@ -43,10 +43,10 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 								<br />
 								<span>~</span>
 								<br />
-								<span>{this.props.prompt}&nbsp;</span>
+								<span>{this.props.prompt + ' '}</span>
 								<span>{entry}</span>
 								<br />
-								<span>-bash: {entry}: command not found</span>
+								<span>-bash: {entry.split(' ')[0]}: command not found</span>
 							</p>
 						</Fragment>
 					))}
