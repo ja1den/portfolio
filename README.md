@@ -6,6 +6,8 @@
 
 I enjoy the command line, so I built one to showcase my projects.
 
+The prompt is inspired by [Starship](https://starship.rs/).
+
 ## Usage
 
 Run the development server.
