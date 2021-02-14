@@ -1,13 +1,13 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
-import commands from '../commands';
+import commands, { Command } from '../lib/commands';
 
 interface TerminalProps {
 	prompt: string;
 }
 
 interface TerminalState {
-	entries: string[];
+	entries: [string, Command | null][];
 	content: string;
 }
 
@@ -18,7 +18,7 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 		super(props);
 
 		this.state = {
-			entries: [],
+			entries: [['help', commands[0]]],
 			content: ''
 		};
 
@@ -37,19 +37,25 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 		return (
 			<main className='terminal'>
 				<section className='content'>
-					{this.state.entries.map((entry, i) => (
-						<Fragment key={i}>
-							<p className='prompt'>
+					{this.state.entries.map((entry, i) => {
+						let content = entry[1]?.[1] ? (
+							React.createElement(entry[1]?.[1], { input: entry[0].split(' ') })
+						) : (
+							<span>-bash: {entry[0].split(" ")[0]}: command not found</span>
+						);
+
+						return (
+							<article key={i} className='prompt'>
 								<br />
 								<span>~</span>
 								<br />
 								<span>{this.props.prompt + ' '}</span>
-								<span>{entry}</span>
+								<span>{entry[0]}</span>
 								<br />
-								<span>-bash: {entry.split(' ')[0]}: command not found</span>
-							</p>
-						</Fragment>
-					))}
+								{content}
+							</article>
+						)
+					})}
 				</section>
 
 				<section className='input'>
@@ -68,10 +74,13 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 			if (event.key === 'Enter') {
 				event.preventDefault();
 
-				const command = this.input.current.innerHTML;
+				const input = this.input.current.innerHTML;
+				const name = input.split(' ')[0];
+
+				const command = commands.find(command => command[0].name === name) ?? null;
 
 				this.setState(state => ({
-					entries: [...state.entries, command]
+					entries: [...state.entries, [input, command]]
 				}));
 
 				this.input.current.innerHTML = '';

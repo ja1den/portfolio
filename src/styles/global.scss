@@ -37,4 +37,9 @@ body {
 	.input span[contenteditable] {
 		outline: 0;
 	}
+
+	p {
+		white-space: pre-wrap;
+		margin: 0;
+	}
 }
