@@ -33,7 +33,7 @@ const commands: Command[] = [
 	[
 		{
 			name: 'about',
-			description: 'learn about me',
+			description: 'about me',
 			usage: 'about'
 		},
 		() => (
@@ -53,6 +53,21 @@ const commands: Command[] = [
 					<a href='https://nodejs.org/en/'>Node.js</a>, and{' '}
 					<a href='https://www.rust-lang.org/'>Rust</a>.
 				</span>
+			</Fragment>
+		)
+	],
+	[
+		{
+			name: 'contact',
+			description: 'list my contacts',
+			usage: 'contact'
+		},
+		() => (
+			<Fragment>
+				<br />
+				<span>Email: contact@ja1den.me</span>
+				<br />
+				<span>GitHub: <a href='https://github.com/ja1den/'>ja1den</a></span>
 			</Fragment>
 		)
 	]
