@@ -17,7 +17,7 @@ const commands: Command[] = [
 	[
 		{
 			name: 'help',
-			description: 'display this list',
+			description: 'print this list',
 			usage: 'help'
 		},
 		() => {
@@ -64,9 +64,9 @@ const commands: Command[] = [
 		() => {
 			return	(
 				<address>
-					email   <a href='mailto:contact@ja1den.me'>contact@ja1den.me</a>
-					<br />
 					github  <a href='https://github.com/ja1den/'>ja1den</a>
+					<br />
+					email   <a href='mailto:contact@ja1den.me'>contact@ja1den.me</a>
 					<p></p>
 				</address>
 			);
@@ -75,14 +75,10 @@ const commands: Command[] = [
 	[
 		{
 			name: 'repo',
-			description: 'check out the source',
+			description: 'project repo',
 			usage: 'repo'
 		},
-		() => (
-			<a href='htpps://github.com/ja1den/portfolio'>
-				Click me!
-			</a>
-		)
+		() => <a href='https://github.com/ja1den/portfolio'>click me</a>
 	]
 ];
 
