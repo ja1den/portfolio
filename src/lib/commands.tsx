@@ -17,15 +17,15 @@ const commands: Command[] = [
 	[
 		{
 			name: 'help',
-			description: 'list the available commands',
+			description: 'display this list',
 			usage: 'help'
 		},
 		() => {
 			const length = Math.max(...commands.map(command => command[0].usage.length)) + 2;
 
-			const message = '\nUsage: <command> [args]\n\n' + 
+			const message = 'Usage: <command> [args]\n\n' + 
 				commands.map(command => command[0].usage + ' '.repeat(length - command[0].usage.length) + command[0].description)
-					.sort().join('\n');
+					.join('\n');
 			
 			return <p>{message}</p>;
 		}
@@ -33,12 +33,11 @@ const commands: Command[] = [
 	[
 		{
 			name: 'about',
-			description: 'about me',
+			description: 'learn about me',
 			usage: 'about'
 		},
 		() => (
 			<Fragment>
-				<br />
 				<span>Hey, I'm Jaiden Douglas!</span>
 				<br />
 				<br />
@@ -59,16 +58,30 @@ const commands: Command[] = [
 	[
 		{
 			name: 'contact',
-			description: 'list my contacts',
+			description: 'ask me something',
 			usage: 'contact'
 		},
+		() => {
+			return	(
+				<address>
+					email   <a href='mailto:contact@ja1den.me'>contact@ja1den.me</a>
+					<br />
+					github  <a href='https://github.com/ja1den/'>ja1den</a>
+					<p></p>
+				</address>
+			);
+		}
+	],
+	[
+		{
+			name: 'repo',
+			description: 'check out the source',
+			usage: 'repo'
+		},
 		() => (
-			<Fragment>
-				<br />
-				<span>Email: contact@ja1den.me</span>
-				<br />
-				<span>GitHub: <a href='https://github.com/ja1den/'>ja1den</a></span>
-			</Fragment>
+			<a href='htpps://github.com/ja1den/portfolio'>
+				Click me!
+			</a>
 		)
 	]
 ];

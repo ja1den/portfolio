@@ -52,6 +52,7 @@ class Terminal extends React.Component<TerminalProps, TerminalState> {
 								<span>{this.props.prompt + ' '}</span>
 								<span>{entry[0]}</span>
 								<br />
+								<br />
 								{content}
 							</article>
 						)
